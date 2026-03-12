@@ -3,64 +3,127 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>カード表示テスト</title>
+  <title>カード一覧</title>
   <style>
     body {
       font-family: sans-serif;
-      background-color: #222; /* ガチャ画面っぽい暗めの背景 */
+      background-color: #1a1a1a; /* よりリッチな暗背景 */
       margin: 0;
-      padding: 10px;
+      padding: 15px;
     }
     h2 {
       color: #fff;
       text-align: center;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
     
-    /* スマホ画面に合わせてカードを綺麗に並べるグリッド */
     .container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 10px;
+      gap: 15px; /* 装飾がはみ出るので少し隙間を広げる */
       justify-items: center;
+      padding-top: 10px;
     }
 
-    /* ★カードの見た目と切り出し設定★ */
-    .card {
+    /* ★ 外側の枠（ここに豪華な装飾をつける） */
+    .card-wrapper {
+      position: relative;
       width: 100px;
       height: 100px;
-      background-size: 500% 100%; /* 画像の横幅を5倍として扱う */
-      border: 3px solid #ccc;
       border-radius: 8px;
-      position: relative;
-      background-color: #555; /* 画像がない時の仮の背景色 */
-      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-    }
-
-    /* レアリティの表示 */
-    .rarity {
-      position: absolute;
-      top: 0;
-      left: 0;
-      background: rgba(255, 215, 0, 0.9);
-      color: #000;
-      font-size: 12px;
-      padding: 2px 6px;
-      font-weight: bold;
-      border-bottom-right-radius: 6px;
-    }
-
-    /* キャラクター名の表示 */
-    .card-info {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      font-size: 10px;
-      text-align: center;
-      padding: 4px 0;
+      background-color: #333;
       box-sizing: border-box;
     }
+
+    /* ★ 内側の画像部分 */
+    .card-image {
+      width: 100%;
+      height: 100%;
+      border-radius: 5px; /* 枠の内側に収まるように少し丸く */
+      background-size: 500% 100%;
+    }
+
+    /* ＝＝＝ レアリティごとの枠線の豪華さ ＝＝＝ */
+    /* ☆1: ブロンズ（銅） */
+    .frame-1 {
+      border: 3px solid #cd7f32;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.6);
+    }
+    /* ☆2: シルバー（銀） */
+    .frame-2 {
+      border: 3px solid #c0c0c0;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.6);
+    }
+    /* ☆3: ゴールド（金・少し光る） */
+    .frame-3 {
+      border: 3px solid #ffd700;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+    }
+    /* ☆4: プラチナピンク（強く光る） */
+    .frame-4 {
+      border: 3px solid #ff69b4;
+      box-shadow: 0 0 12px rgba(255, 105, 180, 0.9), inset 0 0 5px rgba(255, 105, 180, 0.5);
+    }
+    /* ☆5: レインボー・オーロラ（アニメーションで激しく光る！） */
+    .frame-5 {
+      border: 3px solid #fff;
+      animation: glow5 1.5s alternate infinite; /* 点滅アニメーション */
+    }
+    @keyframes glow5 {
+      0% { box-shadow: 0 0 10px #0ff, 0 0 20px #f0f; border-color: #e0ffff; }
+      100% { box-shadow: 0 0 20px #0ff, 0 0 40px #f0f; border-color: #fff; }
+    }
+
+    /* ＝＝＝ 右下：ガラス玉のような属性オーブ ＝＝＝ */
+    .attribute-orb {
+      position: absolute;
+      bottom: -6px;
+      right: -6px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      box-shadow: 0 3px 5px rgba(0,0,0,0.8), inset -2px -2px 6px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.6);
+      z-index: 10;
+    }
+    /* ガラスの「光の反射（ハイライト）」を表現 */
+    .attribute-orb::before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 5px;
+      width: 8px;
+      height: 5px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 50%;
+      transform: rotate(-40deg);
+    }
+    /* グラデーションで立体感を出す */
+    .orb-yellow { background: radial-gradient(circle at 30% 30%, #fff 0%, #ffd700 30%, #b8860b 80%); }
+    .orb-pink   { background: radial-gradient(circle at 30% 30%, #fff 0%, #ff69b4 30%, #c71585 80%); }
+    .orb-purple { background: radial-gradient(circle at 30% 30%, #fff 0%, #9370db 30%, #4b0082 80%); }
+
+    /* ＝＝＝ 左上：レアリティバッジ ＝＝＝ */
+    .rarity-badge {
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      background: #111;
+      font-size: 11px;
+      padding: 3px 6px;
+      font-weight: 900;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      border: 1px solid #555;
+      z-index: 10;
+      font-family: 'Arial Black', sans-serif;
+    }
+    /* レアリティに合わせて文字色も変更 */
+    .badge-1 { color: #cd7f32; }
+    .badge-2 { color: #c0c0c0; }
+    .badge-3 { color: #ffd700; text-shadow: 0 0 3px #ffd700; }
+    .badge-4 { color: #ff69b4; text-shadow: 0 0 5px #ff69b4; border-color: #ff69b4; }
+    .badge-5 { color: #fff; text-shadow: 0 0 5px #0ff, 0 0 10px #f0f; border-color: #fff; }
   </style>
 </head>
 <body>
@@ -69,7 +132,6 @@
   <div id="card-container" class="container"></div>
 
   <script>
-    // 1. コピペしていただいたデータをそのまま文字列として用意
     const rawData = `
 001.png 黄 コンサート ニコニコ・ニコリ
 002.png 紫 コンサート 白髪G
@@ -82,7 +144,6 @@
 009.png 桃 花見 デブG
     `;
 
-    // 2. カードを定義するクラス
     class Card {
       constructor(id, rarity, genre, name, attribute, imageUrl) {
         this.id = id;
@@ -95,13 +156,9 @@
     }
 
     const allCards = [];
-
-    // 3. 文字列データを1行ずつ処理して配列に変換（データ整形）
-    // 改行で分割して配列にする
     const lines = rawData.trim().split('\n');
     
     lines.forEach(line => {
-      // 空白で分割して各項目を取得
       const parts = line.trim().split(/\s+/);
       if (parts.length >= 4) {
         const fileName = parts[0];
@@ -109,45 +166,47 @@
         const genre = parts[2];
         const name = parts[3];
         
-        const baseId = fileName.split('.')[0]; // "001" を取り出す
+        const baseId = fileName.split('.')[0];
         const imageUrl = `./public/image/card/${fileName}`;
 
-        // 1つの画像データから、☆1〜☆5のカードを5枚生成する
         for (let rarity = 1; rarity <= 5; rarity++) {
           allCards.push(new Card(`${baseId}-${rarity}`, rarity, genre, name, attribute, imageUrl));
         }
       }
     });
 
-    // 4. HTMLにカードを描画する処理
     const container = document.getElementById('card-container');
 
     allCards.forEach(card => {
-      // カードのHTML要素を作成
-      const cardEl = document.createElement('div');
-      cardEl.className = 'card';
+      // 1. 大枠（カードラッパー：ここで枠線や光を制御）
+      const wrapperEl = document.createElement('div');
+      wrapperEl.className = `card-wrapper frame-${card.rarity}`;
       
-      // 画像パスをセット
-      cardEl.style.backgroundImage = `url('${card.imageUrl}')`;
-      
-      // ★画像の切り出し位置を計算（横5枚並び）
-      // ☆1なら0%, ☆2なら25%, ☆3なら50%...とズラす
+      // 2. 内側の画像（ここで切り出し）
+      const imgEl = document.createElement('div');
+      imgEl.className = 'card-image';
+      imgEl.style.backgroundImage = `url('${card.imageUrl}')`;
       const positionX = (card.rarity - 1) * 25;
-      cardEl.style.backgroundPosition = `${positionX}% 0%`;
-      
-      // 属性によってカードの枠の色を変える（遊び心です）
-      if (card.attribute === '黄') cardEl.style.borderColor = '#FFD700'; // ゴールド
-      if (card.attribute === '桃') cardEl.style.borderColor = '#FF69B4'; // ピンク
-      if (card.attribute === '紫') cardEl.style.borderColor = '#9370DB'; // パープル
+      imgEl.style.backgroundPosition = `${positionX}% 0%`;
 
-      // htmlの中身（レアリティと名前）をセット
-      cardEl.innerHTML = `
-        <div class="rarity">☆${card.rarity}</div>
-        <div class="card-info">${card.name}</div>
-      `;
-      
-      // 画面に追加
-      container.appendChild(cardEl);
+      // 3. 左上のレアリティバッジ
+      const rarityEl = document.createElement('div');
+      rarityEl.className = `rarity-badge badge-${card.rarity}`;
+      rarityEl.innerText = `★${card.rarity}`;
+
+      // 4. 右下の属性ガラス玉
+      const orbEl = document.createElement('div');
+      let orbClass = '';
+      if (card.attribute === '黄') orbClass = 'orb-yellow';
+      if (card.attribute === '桃') orbClass = 'orb-pink';
+      if (card.attribute === '紫') orbClass = 'orb-purple';
+      orbEl.className = `attribute-orb ${orbClass}`;
+
+      // 要素を合体させて画面に追加
+      wrapperEl.appendChild(imgEl);
+      wrapperEl.appendChild(rarityEl);
+      wrapperEl.appendChild(orbEl);
+      container.appendChild(wrapperEl);
     });
   </script>
 </body>
