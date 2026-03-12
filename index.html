@@ -5,80 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>カード一覧</title>
   <style>
-    /* 全体：より深く、洗練されたダークトーン */
+    /* 全体設定 */
     body {
-      font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', sans-serif;
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', sans-serif;
       background-color: #0d1117; 
       margin: 0;
       padding: 20px 15px;
+      color: #e2e8f0;
     }
     h2 {
-      color: #e2e8f0;
       text-align: center;
-      font-weight: 300; /* 細字にしてモダンな印象に */
+      font-weight: 300;
       letter-spacing: 2px;
       margin-bottom: 25px;
     }
     
     .container {
       display: grid;
-      /* スマホ幅に合わせて自動調整しつつ、少し大きめに表示 */
       grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
       gap: 20px;
       justify-items: center;
     }
 
-    /* ★ 外枠（グラデーションの細いラインとして機能させる） */
+    /* ★ 外枠（全レアリティ共通のスタイリッシュなシルバーグレー枠） */
     .card-wrapper {
       position: relative;
       width: 100%;
-      aspect-ratio: 1 / 1; /* 完全な正方形を維持 */
+      aspect-ratio: 1 / 1; 
       border-radius: 12px;
-      padding: 2px; /* この2pxが「細くて美しい枠線」になります */
-      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+      padding: 2px; 
+      background: linear-gradient(135deg, #64748b, #334155); /* 統一された枠色 */
+      box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+      cursor: pointer; /* タップできることを示す */
+      transition: transform 0.1s;
+    }
+    .card-wrapper:active {
+      transform: scale(0.95); /* タップした時に少し沈むエフェクト */
     }
 
     /* ★ 内側の画像部分 */
     .card-image {
       width: 100%;
       height: 100%;
-      border-radius: 10px; /* 外枠より少し小さく角丸に */
+      border-radius: 10px;
       background-size: 500% 100%;
       position: relative;
-      overflow: hidden; /* はみ出しをカット */
+      overflow: hidden; 
     }
 
-    /* 画像の下部に「黒のグラデーション」を敷いて、星を際立たせる */
+    /* 画像下部のシャドウ */
     .card-overlay {
       position: absolute;
       bottom: 0; left: 0; right: 0;
-      height: 45%;
-      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+      height: 40%;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+    }
+
+    /* ＝＝＝ ☆5限定：カード全体が光るエフェクト ＝＝＝ */
+    .is-star5 {
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.3);
+      animation: pulseGlow 2s infinite alternate;
+    }
+    /* キラッと斜めに光が走るエフェクト */
+    .is-star5 .card-image::after {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: linear-gradient(to bottom right, rgba(255,255,255,0) 40%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 60%);
+      transform: rotate(45deg);
+      animation: shine 3s infinite;
       pointer-events: none;
     }
-
-    /* ＝＝＝ スタイリッシュな枠線の色（グラデーション） ＝＝＝ */
-    .frame-1 { background: linear-gradient(135deg, #78716c, #44403c); } /* ブロンズ */
-    .frame-2 { background: linear-gradient(135deg, #cbd5e1, #64748b); } /* シルバー */
-    .frame-3 { background: linear-gradient(135deg, #fef08a, #eab308); } /* ゴールド */
-    /* ☆4と☆5は少し光らせる */
-    .frame-4 { 
-      background: linear-gradient(135deg, #fbcfe8, #db2777); 
-      box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4);
+    @keyframes pulseGlow {
+      0% { border-color: #ffd700; box-shadow: 0 0 10px rgba(255,215,0,0.3); }
+      100% { border-color: #fff; box-shadow: 0 0 25px rgba(255,255,255,0.6); }
     }
-    .frame-5 {
-      background: linear-gradient(135deg, #c084fc, #ec4899, #facc15);
-      background-size: 200% 200%;
-      animation: mysticGlow 3s ease infinite; /* ゆっくりと色が移り変わる上品なアニメーション */
-      box-shadow: 0 4px 20px rgba(236, 72, 153, 0.5);
-    }
-    @keyframes mysticGlow {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    @keyframes shine {
+      0% { top: -100%; left: -100%; }
+      20% { top: 100%; left: 100%; }
+      100% { top: 100%; left: 100%; }
     }
 
-    /* ＝＝＝ 左下：レアリティの星（文字ではなく記号で表現） ＝＝＝ */
+    /* ＝＝＝ 左下：レアリティの星 ＝＝＝ */
     .stars {
       position: absolute;
       bottom: 6px;
@@ -90,35 +99,125 @@
       z-index: 2;
     }
 
-    /* ＝＝＝ 右上：属性バッジ（フラットでスマートな円形） ＝＝＝ */
+    /* ＝＝＝ 右上：属性バッジ（文字なし、色のみ） ＝＝＝ */
     .attr-badge {
       position: absolute;
-      top: -6px;
-      right: -6px;
-      width: 22px;
-      height: 22px;
+      top: -4px;
+      right: -4px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.9);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
-      font-size: 11px;
-      line-height: 18px; /* 文字を上下中央に */
-      text-align: center;
-      font-weight: bold;
-      color: white;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+      border: 2px solid rgba(255,255,255,0.8);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.6);
       z-index: 10;
     }
-    /* グラデーションで上品な色合いに */
-    .attr-黄 { background: linear-gradient(135deg, #fbbf24, #d97706); }
-    .attr-桃 { background: linear-gradient(135deg, #f472b6, #be185d); }
-    .attr-紫 { background: linear-gradient(135deg, #c084fc, #7e22ce); }
+    .attr-黄 { background: linear-gradient(135deg, #fde047, #ca8a04); }
+    .attr-桃 { background: linear-gradient(135deg, #f9a8d4, #db2777); }
+    .attr-紫 { background: linear-gradient(135deg, #d8b4fe, #9333ea); }
 
+    /* ＝＝＝ モーダル（詳細画面）のスタイル ＝＝＝ */
+    #modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: none; /* 初期状態は非表示 */
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      backdrop-filter: blur(5px); /* 背景を少しぼかす */
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    #modal-content {
+      background: #1e293b;
+      border-radius: 16px;
+      width: 85%;
+      max-width: 320px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      border: 1px solid #334155;
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.2s;
+    }
+    /* 閉じるボタン */
+    .modal-close {
+      position: absolute;
+      top: 10px; right: 15px;
+      font-size: 24px;
+      color: #94a3b8;
+      cursor: pointer;
+    }
+    /* モーダル内の大きな画像 */
+    #modal-image-box {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 15px;
+      border-radius: 12px;
+      border: 2px solid #cbd5e1;
+      background-size: 500% 100%;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    #modal-name {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      margin: 0 0 5px 0;
+    }
+    #modal-info {
+      text-align: center;
+      color: #fbbf24;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    /* ステータス表示部 */
+    .stats-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .stat-box {
+      flex: 1;
+      background: #0f172a;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    .stat-value {
+      font-size: 18px;
+      font-weight: bold;
+      color: #f8fafc;
+    }
   </style>
 </head>
 <body>
 
   <h2>CARD COLLECTION</h2>
   <div id="card-container" class="container"></div>
+
+  <div id="modal-overlay" onclick="closeModal()">
+    <div id="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-close" onclick="closeModal()">×</div>
+      <div id="modal-image-box"></div>
+      <h3 id="modal-name">キャラクター名</h3>
+      <div id="modal-info">★★★★★ / 属性</div>
+      <div class="stats-container">
+        <div class="stat-box">
+          <div class="stat-label">POWER</div>
+          <div id="modal-power" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">SKILL</div>
+          <div id="modal-skill" class="stat-value">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     const rawData = `
@@ -133,6 +232,7 @@
 009.png 桃 花見 デブG
     `;
 
+    // クラスにパワーとスキルのステータスを追加！
     class Card {
       constructor(id, rarity, genre, name, attribute, imageUrl) {
         this.id = id;
@@ -141,6 +241,9 @@
         this.name = name;
         this.attribute = attribute;
         this.imageUrl = imageUrl;
+        // レアリティが高いほどステータスが高くなるように自動計算
+        this.power = rarity * 1200 + Math.floor(Math.random() * 500); 
+        this.skill = rarity * 5 + Math.floor(Math.random() * 3);
       }
     }
 
@@ -167,38 +270,75 @@
     const container = document.getElementById('card-container');
 
     allCards.forEach(card => {
-      // 1. 大枠（ここで極細のグラデーション枠線を表現）
       const wrapperEl = document.createElement('div');
-      wrapperEl.className = `card-wrapper frame-${card.rarity}`;
+      // 共通の枠デザイン。☆5の時だけ専用クラス「is-star5」をつける
+      wrapperEl.className = 'card-wrapper';
+      if(card.rarity === 5) wrapperEl.classList.add('is-star5');
       
-      // 2. 内側の画像
       const imgEl = document.createElement('div');
       imgEl.className = 'card-image';
       imgEl.style.backgroundImage = `url('${card.imageUrl}')`;
       const positionX = (card.rarity - 1) * 25;
       imgEl.style.backgroundPosition = `${positionX}% 0%`;
 
-      // 3. 画像下部のシャドウ（星を見やすくするため）
       const overlayEl = document.createElement('div');
       overlayEl.className = 'card-overlay';
       imgEl.appendChild(overlayEl);
 
-      // 4. 星（レアリティの数だけ★を繰り返す）
       const starsEl = document.createElement('div');
       starsEl.className = 'stars';
-      starsEl.innerText = '★'.repeat(card.rarity); // 例：☆3なら「★★★」になる
+      starsEl.innerText = '★'.repeat(card.rarity);
 
-      // 5. 右上の属性バッジ（漢字1文字）
+      // 文字を入れない属性アイコン
       const attrEl = document.createElement('div');
       attrEl.className = `attr-badge attr-${card.attribute}`;
-      attrEl.innerText = card.attribute;
 
-      // 要素を合体させて画面に追加
+      // 要素の組み立て
       wrapperEl.appendChild(imgEl);
       wrapperEl.appendChild(starsEl);
       wrapperEl.appendChild(attrEl);
       container.appendChild(wrapperEl);
+
+      // ★ タップ（クリック）した時にモーダルを開くイベント ★
+      wrapperEl.addEventListener('click', () => openModal(card, positionX));
     });
+
+    // ＝＝＝ モーダルの制御プログラム ＝＝＝
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalContent = document.getElementById('modal-content');
+
+    function openModal(card, positionX) {
+      // モーダル内の情報を書き換える
+      const imageBox = document.getElementById('modal-image-box');
+      imageBox.style.backgroundImage = `url('${card.imageUrl}')`;
+      imageBox.style.backgroundPosition = `${positionX}% 0%`; // 一覧と同じ位置で切り出し
+
+      document.getElementById('modal-name').innerText = card.name;
+      
+      // 星の数とジャンル、属性の表示
+      const stars = '★'.repeat(card.rarity);
+      document.getElementById('modal-info').innerText = `${stars} / 属性: ${card.attribute} / ${card.genre}`;
+      
+      // ステータス表示
+      document.getElementById('modal-power').innerText = card.power.toLocaleString(); // カンマ区切りで見やすく
+      document.getElementById('modal-skill').innerText = card.skill;
+
+      // モーダルを表示する（アニメーション付き）
+      modalOverlay.style.display = 'flex';
+      setTimeout(() => {
+        modalOverlay.style.opacity = '1';
+        modalContent.style.transform = 'translateY(0)';
+      }, 10);
+    }
+
+    function closeModal() {
+      // モーダルを閉じる（アニメーション付き）
+      modalOverlay.style.opacity = '0';
+      modalContent.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        modalOverlay.style.display = 'none';
+      }, 200); // 0.2秒待ってから完全に消す
+    }
   </script>
 </body>
 </html>
