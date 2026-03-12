@@ -5,130 +5,119 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>カード一覧</title>
   <style>
+    /* 全体：より深く、洗練されたダークトーン */
     body {
-      font-family: sans-serif;
-      background-color: #1a1a1a; /* よりリッチな暗背景 */
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', sans-serif;
+      background-color: #0d1117; 
       margin: 0;
-      padding: 15px;
+      padding: 20px 15px;
     }
     h2 {
-      color: #fff;
+      color: #e2e8f0;
       text-align: center;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      font-weight: 300; /* 細字にしてモダンな印象に */
+      letter-spacing: 2px;
+      margin-bottom: 25px;
     }
     
     .container {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 15px; /* 装飾がはみ出るので少し隙間を広げる */
+      /* スマホ幅に合わせて自動調整しつつ、少し大きめに表示 */
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 20px;
       justify-items: center;
-      padding-top: 10px;
     }
 
-    /* ★ 外側の枠（ここに豪華な装飾をつける） */
+    /* ★ 外枠（グラデーションの細いラインとして機能させる） */
     .card-wrapper {
       position: relative;
-      width: 100px;
-      height: 100px;
-      border-radius: 8px;
-      background-color: #333;
-      box-sizing: border-box;
+      width: 100%;
+      aspect-ratio: 1 / 1; /* 完全な正方形を維持 */
+      border-radius: 12px;
+      padding: 2px; /* この2pxが「細くて美しい枠線」になります */
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
     }
 
     /* ★ 内側の画像部分 */
     .card-image {
       width: 100%;
       height: 100%;
-      border-radius: 5px; /* 枠の内側に収まるように少し丸く */
+      border-radius: 10px; /* 外枠より少し小さく角丸に */
       background-size: 500% 100%;
+      position: relative;
+      overflow: hidden; /* はみ出しをカット */
     }
 
-    /* ＝＝＝ レアリティごとの枠線の豪華さ ＝＝＝ */
-    /* ☆1: ブロンズ（銅） */
-    .frame-1 {
-      border: 3px solid #cd7f32;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.6);
+    /* 画像の下部に「黒のグラデーション」を敷いて、星を際立たせる */
+    .card-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 45%;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+      pointer-events: none;
     }
-    /* ☆2: シルバー（銀） */
-    .frame-2 {
-      border: 3px solid #c0c0c0;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.6);
+
+    /* ＝＝＝ スタイリッシュな枠線の色（グラデーション） ＝＝＝ */
+    .frame-1 { background: linear-gradient(135deg, #78716c, #44403c); } /* ブロンズ */
+    .frame-2 { background: linear-gradient(135deg, #cbd5e1, #64748b); } /* シルバー */
+    .frame-3 { background: linear-gradient(135deg, #fef08a, #eab308); } /* ゴールド */
+    /* ☆4と☆5は少し光らせる */
+    .frame-4 { 
+      background: linear-gradient(135deg, #fbcfe8, #db2777); 
+      box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4);
     }
-    /* ☆3: ゴールド（金・少し光る） */
-    .frame-3 {
-      border: 3px solid #ffd700;
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
-    }
-    /* ☆4: プラチナピンク（強く光る） */
-    .frame-4 {
-      border: 3px solid #ff69b4;
-      box-shadow: 0 0 12px rgba(255, 105, 180, 0.9), inset 0 0 5px rgba(255, 105, 180, 0.5);
-    }
-    /* ☆5: レインボー・オーロラ（アニメーションで激しく光る！） */
     .frame-5 {
-      border: 3px solid #fff;
-      animation: glow5 1.5s alternate infinite; /* 点滅アニメーション */
+      background: linear-gradient(135deg, #c084fc, #ec4899, #facc15);
+      background-size: 200% 200%;
+      animation: mysticGlow 3s ease infinite; /* ゆっくりと色が移り変わる上品なアニメーション */
+      box-shadow: 0 4px 20px rgba(236, 72, 153, 0.5);
     }
-    @keyframes glow5 {
-      0% { box-shadow: 0 0 10px #0ff, 0 0 20px #f0f; border-color: #e0ffff; }
-      100% { box-shadow: 0 0 20px #0ff, 0 0 40px #f0f; border-color: #fff; }
+    @keyframes mysticGlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
-    /* ＝＝＝ 右下：ガラス玉のような属性オーブ ＝＝＝ */
-    .attribute-orb {
+    /* ＝＝＝ 左下：レアリティの星（文字ではなく記号で表現） ＝＝＝ */
+    .stars {
       position: absolute;
-      bottom: -6px;
+      bottom: 6px;
+      left: 8px;
+      color: #fbbf24;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+      z-index: 2;
+    }
+
+    /* ＝＝＝ 右上：属性バッジ（フラットでスマートな円形） ＝＝＝ */
+    .attr-badge {
+      position: absolute;
+      top: -6px;
       right: -6px;
-      width: 26px;
-      height: 26px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
-      box-shadow: 0 3px 5px rgba(0,0,0,0.8), inset -2px -2px 6px rgba(0,0,0,0.5);
-      border: 1px solid rgba(255,255,255,0.6);
-      z-index: 10;
-    }
-    /* ガラスの「光の反射（ハイライト）」を表現 */
-    .attribute-orb::before {
-      content: "";
-      position: absolute;
-      top: 3px;
-      left: 5px;
-      width: 8px;
-      height: 5px;
-      background: rgba(255,255,255,0.9);
-      border-radius: 50%;
-      transform: rotate(-40deg);
-    }
-    /* グラデーションで立体感を出す */
-    .orb-yellow { background: radial-gradient(circle at 30% 30%, #fff 0%, #ffd700 30%, #b8860b 80%); }
-    .orb-pink   { background: radial-gradient(circle at 30% 30%, #fff 0%, #ff69b4 30%, #c71585 80%); }
-    .orb-purple { background: radial-gradient(circle at 30% 30%, #fff 0%, #9370db 30%, #4b0082 80%); }
-
-    /* ＝＝＝ 左上：レアリティバッジ ＝＝＝ */
-    .rarity-badge {
-      position: absolute;
-      top: -8px;
-      left: -8px;
-      background: #111;
+      border: 2px solid rgba(255,255,255,0.9);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
       font-size: 11px;
-      padding: 3px 6px;
-      font-weight: 900;
-      border-radius: 4px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.8);
-      border: 1px solid #555;
+      line-height: 18px; /* 文字を上下中央に */
+      text-align: center;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
       z-index: 10;
-      font-family: 'Arial Black', sans-serif;
     }
-    /* レアリティに合わせて文字色も変更 */
-    .badge-1 { color: #cd7f32; }
-    .badge-2 { color: #c0c0c0; }
-    .badge-3 { color: #ffd700; text-shadow: 0 0 3px #ffd700; }
-    .badge-4 { color: #ff69b4; text-shadow: 0 0 5px #ff69b4; border-color: #ff69b4; }
-    .badge-5 { color: #fff; text-shadow: 0 0 5px #0ff, 0 0 10px #f0f; border-color: #fff; }
+    /* グラデーションで上品な色合いに */
+    .attr-黄 { background: linear-gradient(135deg, #fbbf24, #d97706); }
+    .attr-桃 { background: linear-gradient(135deg, #f472b6, #be185d); }
+    .attr-紫 { background: linear-gradient(135deg, #c084fc, #7e22ce); }
+
   </style>
 </head>
 <body>
 
-  <h2>カード一覧 (全45枚)</h2>
+  <h2>CARD COLLECTION</h2>
   <div id="card-container" class="container"></div>
 
   <script>
@@ -178,34 +167,36 @@
     const container = document.getElementById('card-container');
 
     allCards.forEach(card => {
-      // 1. 大枠（カードラッパー：ここで枠線や光を制御）
+      // 1. 大枠（ここで極細のグラデーション枠線を表現）
       const wrapperEl = document.createElement('div');
       wrapperEl.className = `card-wrapper frame-${card.rarity}`;
       
-      // 2. 内側の画像（ここで切り出し）
+      // 2. 内側の画像
       const imgEl = document.createElement('div');
       imgEl.className = 'card-image';
       imgEl.style.backgroundImage = `url('${card.imageUrl}')`;
       const positionX = (card.rarity - 1) * 25;
       imgEl.style.backgroundPosition = `${positionX}% 0%`;
 
-      // 3. 左上のレアリティバッジ
-      const rarityEl = document.createElement('div');
-      rarityEl.className = `rarity-badge badge-${card.rarity}`;
-      rarityEl.innerText = `★${card.rarity}`;
+      // 3. 画像下部のシャドウ（星を見やすくするため）
+      const overlayEl = document.createElement('div');
+      overlayEl.className = 'card-overlay';
+      imgEl.appendChild(overlayEl);
 
-      // 4. 右下の属性ガラス玉
-      const orbEl = document.createElement('div');
-      let orbClass = '';
-      if (card.attribute === '黄') orbClass = 'orb-yellow';
-      if (card.attribute === '桃') orbClass = 'orb-pink';
-      if (card.attribute === '紫') orbClass = 'orb-purple';
-      orbEl.className = `attribute-orb ${orbClass}`;
+      // 4. 星（レアリティの数だけ★を繰り返す）
+      const starsEl = document.createElement('div');
+      starsEl.className = 'stars';
+      starsEl.innerText = '★'.repeat(card.rarity); // 例：☆3なら「★★★」になる
+
+      // 5. 右上の属性バッジ（漢字1文字）
+      const attrEl = document.createElement('div');
+      attrEl.className = `attr-badge attr-${card.attribute}`;
+      attrEl.innerText = card.attribute;
 
       // 要素を合体させて画面に追加
       wrapperEl.appendChild(imgEl);
-      wrapperEl.appendChild(rarityEl);
-      wrapperEl.appendChild(orbEl);
+      wrapperEl.appendChild(starsEl);
+      wrapperEl.appendChild(attrEl);
       container.appendChild(wrapperEl);
     });
   </script>
