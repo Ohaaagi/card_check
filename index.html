@@ -116,30 +116,60 @@
     }
     @keyframes shineDown { 0%, 20% { top: -100%; } 80%, 100% { top: 100%; } }
 
-    /* ★★★ ☆5演出：虹色のパラレルレア（格子状キラキラ） ★★★ */
-    .is-star5 { box-shadow: 0 0 1rem rgba(255, 215, 0, 0.6); animation: pulseGlow 2s infinite alternate; }
-    /* 虹色のグラデーション（ゆったり動く） */
+    /* ★★★ ☆5演出：修正後 ★★★ */
+    /* 1. パルス発光の緩和/廃止 */
+    .is-star5 {
+      border: 3px solid #fff; /* 白い枠線 */
+      box-shadow: 0 0 1rem rgba(255, 215, 0, 0.4), inset 0 0 0.5rem rgba(255, 255, 255, 0.3); /* 静的な外光と内光に */
+      animation: none; /* pulseGlowを停止 */
+    }
+
+    /* 2. 虹色（::before）の削除 */
     .is-star5 .card-image::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,0,0,0.6), rgba(255,165,0,0.6), rgba(255,255,0,0.6), rgba(0,255,0,0.6), rgba(0,191,255,0.6), rgba(238,130,238,0.6), rgba(255,0,0,0.6));
-      background-size: 300% 300%;
-      animation: rainbowMove 4s linear infinite;
-      mix-blend-mode: color; /* キャラの色味に虹色を乗せる */
-      pointer-events: none; z-index: 4;
+      display: none; /* 擬似要素を消して虹色を廃止 */
     }
-    /* 格子状のプリズム発光 */
+
+    /* 3. 格子状プリズム（::after）の削除と、右上から左下への斜め光沢（キラキラ）の実装 */
     .is-star5 .card-image::after {
-      content: ''; position: absolute; inset: 0;
-      background-image: 
-        linear-gradient(45deg, rgba(255,255,255,0.5) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.5) 75%, rgba(255,255,255,0.5)), 
-        linear-gradient(45deg, rgba(255,255,255,0.5) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.5) 75%, rgba(255,255,255,0.5));
-      background-size: 8px 8px; /* キラキラの細かさ */
-      background-position: 0 0, 4px 4px;
-      mix-blend-mode: color-dodge; /* 光を強く反射させる */
-      opacity: 0.7; pointer-events: none; z-index: 5;
+      content: ''; position: absolute;
+      /* ここで斜めの光の帯を作る。右上から左下。 */
+      top: -150%; /* 画面上部外 */
+      right: -150%; /* 画面右部外 */
+      width: 300%; /* カードより十分に広く */
+      height: 300%; /* カードより十分に広く */
+      background: linear-gradient(
+        to left bottom, /* 右上から左下 */
+        rgba(255, 255, 255, 0) 45%, /* 透明 */
+        rgba(255, 255, 255, 0.8) 50%, /* キラキラっと走る白 */
+        rgba(255, 255, 255, 0) 55%  /* 透明 */
+      );
+      background-size: 200% 200%; /* 背景画像をカードより大きく */
+      mix-blend-mode: overlay; /* 画像のディテールを保ちつつ、光を乗せる */
+      animation: diagonalShine 3s ease-in-out infinite; /* アニメーション */
+      pointer-events: none; z-index: 5;
     }
-    @keyframes pulseGlow { 0% { border-color: #ffd700; box-shadow: 0 0 0.5rem rgba(255,215,0,0.3); } 100% { border-color: #fff; box-shadow: 0 0 1.5rem rgba(255,255,255,0.6); } }
-    @keyframes rainbowMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+    /* 4. 新しいアニメーションの定義（斜めに動かす） */
+    @keyframes diagonalShine {
+      0% {
+        /* 背景の位置を右上に設定 */
+        background-position: 100% 0%; /* 右上 */
+        opacity: 0;
+      }
+      20% {
+        background-position: 100% 0%; /* 右上 */
+        opacity: 1; /* フェードイン */
+      }
+      80% {
+        /* 背景の位置を左下に移動 */
+        background-position: 0% 100%; /* 左下 */
+        opacity: 1;
+      }
+      100% {
+        background-position: 0% 100%; /* 左下 */
+        opacity: 0; /* フェードアウト */
+      }
+    }
 
     /* ダイヤ（レアリティ） */
     .rarity-diamonds { position: absolute; bottom: 4px; left: 4px; display: flex; align-items: center; z-index: 10; }
@@ -177,16 +207,16 @@
     }
     .modal-close { position: absolute; top: 0.5rem; right: 1rem; font-size: 1.5rem; color: #94a3b8; cursor: pointer; z-index: 110; }
     
-    /* モーダル内の画像にもエフェクトを乗せるための専用ラッパー */
     #modal-image-wrapper {
       width: 100%; max-width: 150px; aspect-ratio: 1 / 1;
       margin: 0 auto 1rem; border-radius: 0.5rem; padding: 0.15rem;
       background: linear-gradient(135deg, #64748b, #334155);
-      position: relative; cursor: default; /* タップのエフェクトを無効化 */
+      position: relative; cursor: default;
     }
     #modal-image-box {
       width: 100%; height: 100%; border-radius: 0.35rem;
       background-size: 500% 100%; position: relative; overflow: hidden;
+      background-color: #1e293b;
     }
 
     #modal-name { text-align: center; margin: 0 0 0.5rem 0; font-size: 1.2rem; }
@@ -358,7 +388,7 @@
         if (isPokedexMode && !isOwned) {
           wrapperEl.classList.add('is-unowned');
         } else {
-          // ★ レアリティごとのクラス（エフェクト）を付与
+          // ★ レアリティごとのクラス（エフェクト）を付与。☆5と☆4を適用。
           if (card.rarity === 5) wrapperEl.classList.add('is-star5');
           if (card.rarity === 4) wrapperEl.classList.add('is-star4');
         }
@@ -402,11 +432,10 @@
       });
     }
 
-    // ★ モーダル（詳細画面）を開く時の処理
     function openModal(card, positionX) {
       const modalWrapper = document.getElementById('modal-image-wrapper');
       
-      // 一旦クラスをリセットしてから、該当レアリティのエフェクトを付与
+      // クラスをリセットしてから、該当レアリティのエフェクトを付与
       modalWrapper.className = ''; 
       if (card.rarity === 5) modalWrapper.classList.add('is-star5');
       if (card.rarity === 4) modalWrapper.classList.add('is-star4');
