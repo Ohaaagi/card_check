@@ -365,7 +365,7 @@
         const banner = document.createElement('div');
         banner.className = 'gacha-banner';
         // パスを public/img/gacha に変更し、暗くするグラデーションを削除
-        banner.style.backgroundImage = `url('./public/img/gacha/${gacha.image}')`;
+        banner.style.backgroundImage = `url('./public/image/gacha/${gacha.image}')`;
         banner.innerHTML = `<span class="gacha-banner-text">${gacha.name}</span>`;
         banner.onclick = () => {
           currentGacha = gacha;
@@ -555,3 +555,4 @@
   </script>
 </body>
 </html>
+
