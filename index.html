@@ -33,6 +33,20 @@
     }
 
     /* =========================================
+       8. ローディング画面（新規追加）
+       ========================================= */
+    #loading-screen {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background-color: #0d1117; z-index: 999; display: flex;
+      flex-direction: column; justify-content: center; align-items: center;
+    }
+    #loading-text { font-size: 1.2rem; letter-spacing: 0.2rem; margin-bottom: 1rem; font-weight: bold; color: #fbbf24; }
+    #loading-bar-container {
+      width: 60%; height: 8px; background-color: #334155; border-radius: 4px; overflow: hidden;
+    }
+    #loading-bar { width: 0%; height: 100%; background-color: #fbbf24; transition: width 0.2s ease-out; }
+
+    /* =========================================
        2. 下部ナビゲーション
        ========================================= */
     .bottom-nav {
@@ -41,8 +55,7 @@
     }
     .nav-btn {
       flex: 1; display: flex; justify-content: center; align-items: center;
-      color: #94a3b8; font-size: 1.1rem; font-weight: bold;
-      cursor: pointer; transition: background-color 0.2s;
+      color: #94a3b8; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background-color 0.2s;
     }
     .nav-btn.active { color: #fbbf24; background-color: #334155; border-bottom: 0.2rem solid #fbbf24; }
 
@@ -54,15 +67,9 @@
       width: 100%; aspect-ratio: 3 / 1; border-radius: 0.8rem;
       background-color: #334155; background-size: cover; background-position: center;
       border: 0.15rem solid #64748b; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.5);
-      cursor: pointer; display: flex; justify-content: center; align-items: center;
-      font-size: 1.2rem; font-weight: bold; text-shadow: 0 0.1rem 0.3rem #000;
-      overflow: hidden;
+      cursor: pointer; overflow: hidden;
     }
     .gacha-banner:active { transform: scale(0.97); }
-    /* バナー内のテキストに黒帯をつけて見やすくする */
-    .gacha-banner-text {
-      background: rgba(0,0,0,0.5); padding: 0.2rem 1rem; border-radius: 2rem;
-    }
 
     .pull-actions { display: flex; justify-content: space-around; margin-top: 2rem; gap: 1rem; }
     .btn-pull {
@@ -76,44 +83,32 @@
     .result-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 1rem; }
     .result-grid .card-wrapper { width: 25vw; max-width: 80px; }
     .back-btn {
-      margin-top: 3rem; padding: 0.8rem; text-align: center;
-      background-color: #475569; border-radius: 0.5rem; cursor: pointer;
+      margin-top: 3rem; padding: 0.8rem; text-align: center; background-color: #475569; border-radius: 0.5rem; cursor: pointer;
     }
 
     /* =========================================
        4. 図鑑画面
        ========================================= */
-    .pokedex-grid {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding-bottom: 2rem;
-    }
+    .pokedex-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding-bottom: 2rem; }
 
     /* =========================================
        5. カードのデザイン
        ========================================= */
     .card-wrapper {
-      position: relative; width: 100%; aspect-ratio: 1 / 1; 
-      border-radius: 0.5rem; padding: 0.15rem; 
-      background: linear-gradient(135deg, #64748b, #334155);
-      box-shadow: 0 0.4rem 0.8rem rgba(0,0,0,0.5); cursor: pointer;
+      position: relative; width: 100%; aspect-ratio: 1 / 1; border-radius: 0.5rem; padding: 0.15rem; 
+      background: linear-gradient(135deg, #64748b, #334155); box-shadow: 0 0.4rem 0.8rem rgba(0,0,0,0.5); cursor: pointer;
     }
     .card-image {
-      width: 100%; height: 100%; border-radius: 0.35rem;
-      background-size: 500% 100%; position: relative; overflow: hidden; 
-      background-color: #1e293b;
+      width: 100%; height: 100%; border-radius: 0.35rem; background-size: 500% 100%; position: relative; overflow: hidden; background-color: #1e293b;
     }
     .card-overlay {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 40%;
-      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+      position: absolute; bottom: 0; left: 0; right: 0; height: 40%; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
     }
 
-    /* 未所持（シルエット） */
     .is-unowned .card-image { filter: grayscale(100%) brightness(0.25); }
-    .is-unowned .card-wrapper {
-      background: #0f172a; border: 1px solid #1e293b; box-shadow: none; cursor: default;
-    }
+    .is-unowned .card-wrapper { background: #0f172a; border: 1px solid #1e293b; box-shadow: none; cursor: default; }
     .is-unowned .rarity-diamonds, .is-unowned .attr-badge, .is-unowned .card-overlay { display: none; }
 
-    /* ☆4演出 */
     .is-star4 { box-shadow: 0 0 0.8rem rgba(255, 215, 0, 0.4); }
     .is-star4 .card-image::after {
       content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
@@ -122,11 +117,7 @@
     }
     @keyframes shineDown { 0%, 20% { top: -100%; } 80%, 100% { top: 100%; } }
 
-    /* ☆5演出 */
-    .is-star5 {
-      border: 3px solid #fff; 
-      box-shadow: 0 0 1rem rgba(255, 215, 0, 0.4), inset 0 0 0.5rem rgba(255, 255, 255, 0.3);
-    }
+    .is-star5 { border: 3px solid #fff; box-shadow: 0 0 1rem rgba(255, 215, 0, 0.4), inset 0 0 0.5rem rgba(255, 255, 255, 0.3); }
     .is-star5 .card-image::after {
       content: ''; position: absolute; top: -150%; right: -150%; width: 300%; height: 300%;
       background: linear-gradient(
@@ -137,27 +128,16 @@
       background-size: 200% 200%; mix-blend-mode: color-dodge; 
       animation: diagonalShine 3s ease-in-out infinite; pointer-events: none; z-index: 5;
     }
-    @keyframes diagonalShine {
-      0% { background-position: 100% 0%; opacity: 0; }
-      20% { background-position: 100% 0%; opacity: 1; }
-      80% { background-position: 0% 100%; opacity: 1; }
-      100% { background-position: 0% 100%; opacity: 0; }
-    }
+    @keyframes diagonalShine { 0% { background-position: 100% 0%; opacity: 0; } 20% { background-position: 100% 0%; opacity: 1; } 80% { background-position: 0% 100%; opacity: 1; } 100% { background-position: 0% 100%; opacity: 0; } }
 
-    /* ダイヤ・属性バッジ */
     .rarity-diamonds { position: absolute; bottom: 4px; left: 4px; display: flex; align-items: center; z-index: 10; }
     .diamond { width: 10px; height: 10px; transform: rotate(45deg); border: 1px solid rgba(255, 255, 255, 0.7); margin-left: -4px; }
     .diamond:first-child { margin-left: 0; }
     .diamond-silver { background: linear-gradient(135deg, #e2e8f0, #94a3b8); } 
     .diamond-gold { background: linear-gradient(135deg, #fef08a, #eab308); border-color: #fff; } 
-    .diamond-rainbow { 
-      background: linear-gradient(135deg, #f87171, #facc15, #4ade80, #60a5fa, #c084fc); 
-      background-size: 200% 200%; animation: mysticGlow 3s ease infinite; border-color: #fff;
-    }
-    .attr-badge {
-      position: absolute; bottom: 3px; right: 3px; width: 14px; height: 14px;
-      border-radius: 50%; border: 1px solid rgba(255,255,255,0.8); z-index: 10;
-    }
+    .diamond-rainbow { background: linear-gradient(135deg, #f87171, #facc15, #4ade80, #60a5fa, #c084fc); background-size: 200% 200%; animation: mysticGlow 3s ease infinite; border-color: #fff; }
+    
+    .attr-badge { position: absolute; bottom: 3px; right: 3px; width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.8); z-index: 10; }
     .attr-黄 { background: linear-gradient(135deg, #fde047, #ca8a04); }
     .attr-桃 { background: linear-gradient(135deg, #f9a8d4, #db2777); }
     .attr-紫 { background: linear-gradient(135deg, #d8b4fe, #9333ea); }
@@ -166,22 +146,12 @@
        6. モーダル（詳細画面）
        ========================================= */
     #modal-overlay, #confirm-modal-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.85); display: none; justify-content: center;
-      align-items: center; z-index: 100; backdrop-filter: blur(0.3rem);
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(0.3rem);
     }
-    #modal-content {
-      background: #1e293b; border-radius: 1rem; width: 80%; padding: 1.5rem; border: 0.1rem solid #334155; position: relative;
-    }
+    #modal-content { background: #1e293b; border-radius: 1rem; width: 80%; padding: 1.5rem; border: 0.1rem solid #334155; position: relative; }
     .modal-close { position: absolute; top: 0.5rem; right: 1rem; font-size: 1.5rem; color: #94a3b8; cursor: pointer; z-index: 110; }
-    
-    #modal-image-wrapper {
-      width: 100%; max-width: 150px; aspect-ratio: 1 / 1; margin: 0 auto 1rem; border-radius: 0.5rem; padding: 0.15rem;
-      background: linear-gradient(135deg, #64748b, #334155); position: relative; cursor: default;
-    }
-    #modal-image-box {
-      width: 100%; height: 100%; border-radius: 0.35rem; background-size: 500% 100%; position: relative; overflow: hidden; background-color: #1e293b;
-    }
+    #modal-image-wrapper { width: 100%; max-width: 150px; aspect-ratio: 1 / 1; margin: 0 auto 1rem; border-radius: 0.5rem; padding: 0.15rem; background: linear-gradient(135deg, #64748b, #334155); position: relative; cursor: default; }
+    #modal-image-box { width: 100%; height: 100%; border-radius: 0.35rem; background-size: 500% 100%; position: relative; overflow: hidden; background-color: #1e293b; }
     #modal-name { text-align: center; margin: 0 0 0.5rem 0; font-size: 1.2rem; }
     #modal-info { text-align: center; color: #fbbf24; font-size: 0.9rem; margin-bottom: 1rem; }
 
@@ -192,28 +162,17 @@
        ========================================= */
     .result-grid { perspective: 1000px; }
     .card-wrapper.in-gacha { background: transparent; box-shadow: none; border: none; padding: 0; cursor: pointer; }
-    .card-inner {
-      position: relative; width: 100%; height: 100%; transform-style: preserve-3d;
-      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    .card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
     .card-wrapper.flip-star4 .card-inner { transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     .card-wrapper.flip-star5 .card-inner { transition: transform 2.5s ease-in-out; }
     .card-wrapper.is-flipped .card-inner { transform: rotateY(180deg); }
 
-    .card-front, .card-back {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 0.5rem;
-    }
-    .card-front {
-      transform: rotateY(180deg); padding: 0.15rem; background: linear-gradient(135deg, #64748b, #334155);
-      box-shadow: 0 0.4rem 0.8rem rgba(0,0,0,0.5);
-    }
+    .card-front, .card-back { position: absolute; top: 0; left: 0; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 0.5rem; }
+    .card-front { transform: rotateY(180deg); padding: 0.15rem; background: linear-gradient(135deg, #64748b, #334155); box-shadow: 0 0.4rem 0.8rem rgba(0,0,0,0.5); }
     .is-star4 .card-front { box-shadow: 0 0 0.8rem rgba(255, 215, 0, 0.4); }
     .is-star5 .card-front { border: 3px solid #fff; box-shadow: 0 0 1rem rgba(255, 215, 0, 0.4), inset 0 0 0.5rem rgba(255, 255, 255, 0.3); }
 
-    .card-back {
-      background: linear-gradient(135deg, #475569, #1e293b); border: 2px solid #94a3b8; display: flex; justify-content: center; align-items: center;
-    }
+    .card-back { background: linear-gradient(135deg, #475569, #1e293b); border: 2px solid #94a3b8; display: flex; justify-content: center; align-items: center; }
     .card-back::after { content: '？'; font-size: 2rem; color: #94a3b8; font-weight: bold; }
     .card-back.back-star4 { border-color: #fbbf24; background: linear-gradient(135deg, #b45309, #78350f); }
     .card-back.back-star4::after { color: #fbbf24; }
@@ -227,22 +186,26 @@
       90% { transform: scale(1.1); filter: brightness(2); }
     }
     .card-wrapper.is-fakeout.is-flipped { animation: fakeoutShake 1.5s forwards; }
-    .card-wrapper.is-fakeout.is-flipped .card-inner {
-      transition: transform 0.5s ease-out !important; transition-delay: 1.5s !important; transform: rotateY(180deg);
-    }
+    .card-wrapper.is-fakeout.is-flipped .card-inner { transition: transform 0.5s ease-out !important; transition-delay: 1.5s !important; transform: rotateY(180deg); }
   </style>
 </head>
 <body>
 
   <div id="app">
+    <div id="loading-screen">
+      <div id="loading-text">NOW LOADING...</div>
+      <div id="loading-bar-container">
+        <div id="loading-bar"></div>
+      </div>
+    </div>
+
     <div id="view-gacha" class="view active">
       <h2>GACHA</h2>
       <div id="gacha-banners" class="banner-list"></div>
     </div>
 
     <div id="view-gacha-pull" class="view">
-      <h2 id="pull-gacha-title">ガチャ名</h2>
-      <div id="pull-banner-preview" class="gacha-banner" style="cursor: default;"></div>
+      <div id="pull-banner-preview" class="gacha-banner" style="cursor: default; margin-top: 1rem;"></div>
       <div class="pull-actions">
         <div class="btn-pull" onclick="confirmGacha(1)">1回 引く</div>
         <div class="btn-pull btn-pull-5" onclick="confirmGacha(5)">5回 引く</div>
@@ -340,7 +303,6 @@
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById(viewId).classList.add('active');
 
-      // ガチャを引く画面・結果画面中は下のタブナビゲーションを隠す
       const bottomNav = document.querySelector('.bottom-nav');
       if (viewId === 'view-gacha-pull' || viewId === 'view-gacha-result') {
         bottomNav.style.display = 'none';
@@ -361,17 +323,15 @@
 
     function initGachaList() {
       const container = document.getElementById('gacha-banners');
+      container.innerHTML = '';
       gachaData.forEach(gacha => {
         const banner = document.createElement('div');
         banner.className = 'gacha-banner';
-        // パスを public/img/gacha に変更し、暗くするグラデーションを削除
+        // パス修正＆テキストを削除して画像だけを見せる
         banner.style.backgroundImage = `url('./public/image/gacha/${gacha.image}')`;
-        banner.innerHTML = `<span class="gacha-banner-text">${gacha.name}</span>`;
         banner.onclick = () => {
           currentGacha = gacha;
-          document.getElementById('pull-gacha-title').innerText = gacha.name;
           document.getElementById('pull-banner-preview').style.backgroundImage = banner.style.backgroundImage;
-          document.getElementById('pull-banner-preview').innerHTML = banner.innerHTML;
           switchView('view-gacha-pull');
         };
         container.appendChild(banner);
@@ -383,15 +343,8 @@
       document.getElementById('confirm-text').innerText = `${times}回 ガチャを引きますか？`;
       document.getElementById('confirm-modal-overlay').style.display = 'flex';
     }
-
-    function closeConfirmModal() {
-      document.getElementById('confirm-modal-overlay').style.display = 'none';
-    }
-
-    function proceedGacha() {
-      closeConfirmModal();
-      executeGacha(pendingGachaTimes);
-    }
+    function closeConfirmModal() { document.getElementById('confirm-modal-overlay').style.display = 'none'; }
+    function proceedGacha() { closeConfirmModal(); executeGacha(pendingGachaTimes); }
 
     function executeGacha(times) {
       const pool = allCards.filter(c => currentGacha.genres.includes(c.genre));
@@ -411,9 +364,8 @@
         const pulledCard = finalPool[Math.floor(Math.random() * finalPool.length)];
         
         results.push(pulledCard);
-        ownedCardIds.add(pulledCard.id); // ここで所持IDに追加
+        ownedCardIds.add(pulledCard.id);
       }
-
       renderCards(results, 'gacha-result-container', false);
       switchView('view-gacha-result');
     }
@@ -421,10 +373,10 @@
     function renderCards(cardsArray, containerId, isPokedexMode = false) {
       const container = document.getElementById(containerId);
       container.innerHTML = ''; 
-
       let revealedCount = 0;
       const totalCards = isPokedexMode ? 0 : cardsArray.length;
       const btnContainer = document.getElementById('result-action-buttons');
+      
       if (btnContainer && !isPokedexMode) {
         btnContainer.style.opacity = '0.3';
         btnContainer.style.pointerEvents = 'none';
@@ -435,7 +387,6 @@
         const wrapperEl = document.createElement('div');
         wrapperEl.className = 'card-wrapper';
 
-        // 共通のカード表面パーツを作成
         const imgEl = document.createElement('div');
         imgEl.className = 'card-image';
         imgEl.style.backgroundImage = `url('${card.imageUrl}')`;
@@ -461,75 +412,45 @@
         const attrEl = document.createElement('div');
         attrEl.className = `attr-badge attr-${card.attribute}`;
 
-        // ★★★ ここで図鑑モードとガチャモードを完全に分離 ★★★
         if (isPokedexMode) {
-          // 図鑑モード：3D効果を一切入れず、シンプルに組み立てる（透明バグ回避）
-          if (!isOwned) {
-            wrapperEl.classList.add('is-unowned');
-          } else {
+          if (!isOwned) wrapperEl.classList.add('is-unowned');
+          else {
              if (card.rarity === 5) wrapperEl.classList.add('is-star5');
              if (card.rarity === 4) wrapperEl.classList.add('is-star4');
           }
-          wrapperEl.appendChild(imgEl);
-          wrapperEl.appendChild(diamondsEl);
-          wrapperEl.appendChild(attrEl);
-
+          wrapperEl.appendChild(imgEl); wrapperEl.appendChild(diamondsEl); wrapperEl.appendChild(attrEl);
           if (!isOwned) wrapperEl.onclick = null;
           else wrapperEl.onclick = () => openModal(card, positionX);
-
         } else {
-          // ガチャ結果モード：フリップ用の3D構造を作る
           wrapperEl.classList.add('in-gacha');
-          
           if (card.rarity === 5) wrapperEl.classList.add('is-star5', 'flip-star5');
           else if (card.rarity === 4) wrapperEl.classList.add('is-star4', 'flip-star4');
           else wrapperEl.classList.add('flip-star-normal');
 
           let initialBackRarity = card.rarity;
-          if (card.rarity >= 4 && Math.random() < 0.30) {
-            wrapperEl.classList.add('is-fakeout');
-            initialBackRarity = 3;
-          }
+          if (card.rarity >= 4 && Math.random() < 0.30) { wrapperEl.classList.add('is-fakeout'); initialBackRarity = 3; }
 
-          const innerEl = document.createElement('div');
-          innerEl.className = 'card-inner';
-          const frontEl = document.createElement('div');
-          frontEl.className = 'card-front';
-          const backEl = document.createElement('div');
-          backEl.className = 'card-back';
+          const innerEl = document.createElement('div'); innerEl.className = 'card-inner';
+          const frontEl = document.createElement('div'); frontEl.className = 'card-front';
+          const backEl = document.createElement('div'); backEl.className = 'card-back';
 
           if (initialBackRarity === 5) backEl.classList.add('back-star5');
           else if (initialBackRarity === 4) backEl.classList.add('back-star4');
 
-          // 表面パーツを「frontEl」に入れる
-          frontEl.appendChild(imgEl);
-          frontEl.appendChild(diamondsEl);
-          frontEl.appendChild(attrEl);
-
-          innerEl.appendChild(backEl);
-          innerEl.appendChild(frontEl);
-          wrapperEl.appendChild(innerEl);
+          frontEl.appendChild(imgEl); frontEl.appendChild(diamondsEl); frontEl.appendChild(attrEl);
+          innerEl.appendChild(backEl); innerEl.appendChild(frontEl); wrapperEl.appendChild(innerEl);
 
           let isRevealed = false;
           wrapperEl.onclick = () => {
             if (!isRevealed) {
-              wrapperEl.classList.add('is-flipped');
-              isRevealed = true;
-
-              revealedCount++;
+              wrapperEl.classList.add('is-flipped'); isRevealed = true; revealedCount++;
               if (revealedCount === totalCards && btnContainer) {
                 const delay = wrapperEl.classList.contains('is-fakeout') ? 2000 : 1500;
-                setTimeout(() => {
-                  btnContainer.style.opacity = '1';
-                  btnContainer.style.pointerEvents = 'auto';
-                }, delay);
+                setTimeout(() => { btnContainer.style.opacity = '1'; btnContainer.style.pointerEvents = 'auto'; }, delay);
               }
-            } else {
-               openModal(card, positionX);
-            }
+            } else { openModal(card, positionX); }
           };
         }
-
         container.appendChild(wrapperEl);
       });
     }
@@ -551,8 +472,52 @@
     
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
 
-    initGachaList();
+    // =========================================
+    // 画像プリロード処理
+    // =========================================
+    function preloadImagesAndInit() {
+      const imageUrlsToLoad = new Set();
+      
+      // ガチャバナー画像のURLをセットに追加
+      gachaData.forEach(g => imageUrlsToLoad.add(`./public/image/gacha/${g.image}`));
+      // カード画像のURLをセットに追加
+      allCards.forEach(c => imageUrlsToLoad.add(c.imageUrl));
+
+      const totalImages = imageUrlsToLoad.size;
+      let loadedCount = 0;
+
+      if (totalImages === 0) {
+        finishLoading();
+        return;
+      }
+
+      imageUrlsToLoad.forEach(url => {
+        const img = new Image();
+        img.onload = () => handleImageLoad();
+        img.onerror = () => handleImageLoad(); // エラー時もカウントを進める（止まらないように）
+        img.src = url;
+      });
+
+      function handleImageLoad() {
+        loadedCount++;
+        const percent = Math.floor((loadedCount / totalImages) * 100);
+        document.getElementById('loading-bar').style.width = percent + '%';
+
+        if (loadedCount === totalImages) {
+          // ロード完了後、少しだけ間を置いて画面を消す（プログレスバーが100%になるのを見せるため）
+          setTimeout(finishLoading, 500);
+        }
+      }
+    }
+
+    function finishLoading() {
+      document.getElementById('loading-screen').style.display = 'none';
+      initGachaList();
+    }
+
+    // アプリ起動時にプリロードを開始
+    window.onload = preloadImagesAndInit;
+
   </script>
 </body>
 </html>
-
