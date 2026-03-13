@@ -27,20 +27,20 @@
       justify-items: center;
     }
 
-    /* ★ 外枠（全レアリティ共通のスタイリッシュなシルバーグレー枠） */
+    /* ★ 外枠 */
     .card-wrapper {
       position: relative;
       width: 100%;
       aspect-ratio: 1 / 1; 
       border-radius: 12px;
       padding: 2px; 
-      background: linear-gradient(135deg, #64748b, #334155); /* 統一された枠色 */
+      background: linear-gradient(135deg, #64748b, #334155);
       box-shadow: 0 6px 12px rgba(0,0,0,0.5);
-      cursor: pointer; /* タップできることを示す */
+      cursor: pointer;
       transition: transform 0.1s;
     }
     .card-wrapper:active {
-      transform: scale(0.95); /* タップした時に少し沈むエフェクト */
+      transform: scale(0.95);
     }
 
     /* ★ 内側の画像部分 */
@@ -53,12 +53,12 @@
       overflow: hidden; 
     }
 
-    /* 画像下部のシャドウ */
+    /* 画像下部のシャドウ（アイコンを見やすくする） */
     .card-overlay {
       position: absolute;
       bottom: 0; left: 0; right: 0;
       height: 40%;
-      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
     }
 
     /* ＝＝＝ ☆5限定：カード全体が光るエフェクト ＝＝＝ */
@@ -66,7 +66,6 @@
       box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.3);
       animation: pulseGlow 2s infinite alternate;
     }
-    /* キラッと斜めに光が走るエフェクト */
     .is-star5 .card-image::after {
       content: '';
       position: absolute;
@@ -87,44 +86,54 @@
       100% { top: 100%; left: 100%; }
     }
 
-    /* ＝＝＝ 左下：レアリティの星 ＝＝＝ */
-    .stars {
+    /* ＝＝＝ 左下：レアリティのダイヤ（図形で表現） ＝＝＝ */
+    .rarity-diamonds {
       position: absolute;
-      bottom: 6px;
-      left: 8px;
-      color: #fbbf24;
-      font-size: 13px;
-      letter-spacing: 2px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.9);
-      z-index: 2;
+      bottom: 8px; /* 下からの位置 */
+      left: 8px;   /* 左からの位置 */
+      display: flex;
+      align-items: center;
+      z-index: 10;
+    }
+    .diamond {
+      width: 9px;
+      height: 9px;
+      background: linear-gradient(135deg, #fef08a, #eab308); /* 輝くゴールド */
+      transform: rotate(45deg); /* 四角を45度回転させてひし形に */
+      border: 1px solid rgba(255, 255, 255, 0.7); /* 白い縁取りでキラキラ感を出す */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      margin-left: -4px; /* ここで少しずつ重ねる！ */
+    }
+    .diamond:first-child {
+      margin-left: 0; /* 1個目は重ねない */
     }
 
-    /* ＝＝＝ 右上：属性バッジ（文字なし、色のみ） ＝＝＝ */
+    /* ＝＝＝ 右下：属性バッジ（枠内に収める） ＝＝＝ */
     .attr-badge {
       position: absolute;
-      top: -4px;
-      right: -4px;
-      width: 16px;
-      height: 16px;
+      bottom: 5px; /* 上ではなく下に変更し、枠内に収める */
+      right: 5px;  /* 枠内に収める */
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.8);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+      border: 1.5px solid rgba(255,255,255,0.8);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.8);
       z-index: 10;
     }
     .attr-黄 { background: linear-gradient(135deg, #fde047, #ca8a04); }
     .attr-桃 { background: linear-gradient(135deg, #f9a8d4, #db2777); }
     .attr-紫 { background: linear-gradient(135deg, #d8b4fe, #9333ea); }
 
-    /* ＝＝＝ モーダル（詳細画面）のスタイル ＝＝＝ */
+    /* ＝＝＝ モーダル（詳細画面） ＝＝＝ */
     #modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.85);
-      display: none; /* 初期状態は非表示 */
+      display: none;
       justify-content: center;
       align-items: center;
       z-index: 100;
-      backdrop-filter: blur(5px); /* 背景を少しぼかす */
+      backdrop-filter: blur(5px);
       opacity: 0;
       transition: opacity 0.2s;
     }
@@ -140,7 +149,6 @@
       transform: translateY(20px);
       transition: transform 0.2s;
     }
-    /* 閉じるボタン */
     .modal-close {
       position: absolute;
       top: 10px; right: 15px;
@@ -148,7 +156,6 @@
       color: #94a3b8;
       cursor: pointer;
     }
-    /* モーダル内の大きな画像 */
     #modal-image-box {
       width: 150px;
       height: 150px;
@@ -170,7 +177,6 @@
       font-size: 14px;
       margin-bottom: 20px;
     }
-    /* ステータス表示部 */
     .stats-container {
       display: flex;
       justify-content: space-between;
@@ -205,7 +211,7 @@
       <div class="modal-close" onclick="closeModal()">×</div>
       <div id="modal-image-box"></div>
       <h3 id="modal-name">キャラクター名</h3>
-      <div id="modal-info">★★★★★ / 属性</div>
+      <div id="modal-info">属性 / ジャンル</div>
       <div class="stats-container">
         <div class="stat-box">
           <div class="stat-label">POWER</div>
@@ -227,12 +233,11 @@
 004.png 紫 日常 ニコニコ・ニコリ
 005.png 桃 日常 白髪G
 006.png 黄 日常 デブG
-007.png 桃 花見 ニコニコ・ニコリ
-008.png 桃 花見 白髪G
-009.png 桃 花見 デブG
+007.png 桃 お花見 ニコニコ・ニコリ
+008.png 桃 お花見 白髪G
+009.png 桃 お花見 デブG
     `;
 
-    // クラスにパワーとスキルのステータスを追加！
     class Card {
       constructor(id, rarity, genre, name, attribute, imageUrl) {
         this.id = id;
@@ -241,7 +246,6 @@
         this.name = name;
         this.attribute = attribute;
         this.imageUrl = imageUrl;
-        // レアリティが高いほどステータスが高くなるように自動計算
         this.power = rarity * 1200 + Math.floor(Math.random() * 500); 
         this.skill = rarity * 5 + Math.floor(Math.random() * 3);
       }
@@ -271,7 +275,6 @@
 
     allCards.forEach(card => {
       const wrapperEl = document.createElement('div');
-      // 共通の枠デザイン。☆5の時だけ専用クラス「is-star5」をつける
       wrapperEl.className = 'card-wrapper';
       if(card.rarity === 5) wrapperEl.classList.add('is-star5');
       
@@ -285,45 +288,45 @@
       overlayEl.className = 'card-overlay';
       imgEl.appendChild(overlayEl);
 
-      const starsEl = document.createElement('div');
-      starsEl.className = 'stars';
-      starsEl.innerText = '★'.repeat(card.rarity);
+      // ★ ダイヤの生成（文字ではなく図形を重ねる）
+      const diamondsEl = document.createElement('div');
+      diamondsEl.className = 'rarity-diamonds';
+      for (let i = 0; i < card.rarity; i++) {
+        const diamond = document.createElement('div');
+        diamond.className = 'diamond';
+        diamondsEl.appendChild(diamond);
+      }
 
-      // 文字を入れない属性アイコン
+      // 属性アイコン
       const attrEl = document.createElement('div');
       attrEl.className = `attr-badge attr-${card.attribute}`;
 
-      // 要素の組み立て
       wrapperEl.appendChild(imgEl);
-      wrapperEl.appendChild(starsEl);
+      wrapperEl.appendChild(diamondsEl);
       wrapperEl.appendChild(attrEl);
       container.appendChild(wrapperEl);
 
-      // ★ タップ（クリック）した時にモーダルを開くイベント ★
       wrapperEl.addEventListener('click', () => openModal(card, positionX));
     });
 
-    // ＝＝＝ モーダルの制御プログラム ＝＝＝
+    // モーダル制御
     const modalOverlay = document.getElementById('modal-overlay');
     const modalContent = document.getElementById('modal-content');
 
     function openModal(card, positionX) {
-      // モーダル内の情報を書き換える
       const imageBox = document.getElementById('modal-image-box');
       imageBox.style.backgroundImage = `url('${card.imageUrl}')`;
-      imageBox.style.backgroundPosition = `${positionX}% 0%`; // 一覧と同じ位置で切り出し
+      imageBox.style.backgroundPosition = `${positionX}% 0%`; 
 
       document.getElementById('modal-name').innerText = card.name;
       
-      // 星の数とジャンル、属性の表示
-      const stars = '★'.repeat(card.rarity);
-      document.getElementById('modal-info').innerText = `${stars} / 属性: ${card.attribute} / ${card.genre}`;
+      // モーダルの中は分かりやすく文字の星にしておきます
+      const starsText = '★'.repeat(card.rarity);
+      document.getElementById('modal-info').innerText = `${starsText} / 属性: ${card.attribute} / ${card.genre}`;
       
-      // ステータス表示
-      document.getElementById('modal-power').innerText = card.power.toLocaleString(); // カンマ区切りで見やすく
+      document.getElementById('modal-power').innerText = card.power.toLocaleString();
       document.getElementById('modal-skill').innerText = card.skill;
 
-      // モーダルを表示する（アニメーション付き）
       modalOverlay.style.display = 'flex';
       setTimeout(() => {
         modalOverlay.style.opacity = '1';
@@ -332,12 +335,11 @@
     }
 
     function closeModal() {
-      // モーダルを閉じる（アニメーション付き）
       modalOverlay.style.opacity = '0';
       modalContent.style.transform = 'translateY(20px)';
       setTimeout(() => {
         modalOverlay.style.display = 'none';
-      }, 200); // 0.2秒待ってから完全に消す
+      }, 200); 
     }
   </script>
 </body>
