@@ -5,26 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>カードコレクション</title>
   <style>
-    /* =========================================
-       ★追加: 要素のはみ出しを完全に防ぐ魔法のコード
-       ========================================= */
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     /* =========================================
-       1. 全体レイアウト（どのスマホでもピッタリ収まるように修正）
+       1. 全体レイアウト
        ========================================= */
     :root { font-size: 16px; }
     body {
       margin: 0; background-color: #000; display: flex;
       justify-content: center; align-items: center;
-      height: 100dvh; /* スマホのブラウザバーを考慮した高さ指定 */
-      font-family: 'Helvetica Neue', Arial, sans-serif;
+      height: 100dvh; font-family: 'Helvetica Neue', Arial, sans-serif;
       color: #e2e8f0; overflow: hidden;
     }
     #app {
-      width: 100%; height: 100%; max-width: 480px; /* PCで見てもスマホサイズに制限 */
+      width: 100%; height: 100%; max-width: 480px; 
       background-color: #0d1117; position: relative;
       display: flex; flex-direction: column; 
     }
@@ -50,9 +44,7 @@
       color: #94a3b8; font-size: 1.1rem; font-weight: bold;
       cursor: pointer; transition: background-color 0.2s;
     }
-    .nav-btn.active {
-      color: #fbbf24; background-color: #334155; border-bottom: 0.2rem solid #fbbf24;
-    }
+    .nav-btn.active { color: #fbbf24; background-color: #334155; border-bottom: 0.2rem solid #fbbf24; }
 
     /* =========================================
        3. ガチャ画面
@@ -86,10 +78,7 @@
        4. 図鑑画面
        ========================================= */
     .pokedex-grid {
-      display: grid; 
-      grid-template-columns: repeat(5, 1fr); 
-      gap: 6px; /* スキマをピクセルで固定して綺麗に並べる */
-      padding-bottom: 2rem;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding-bottom: 2rem;
     }
 
     /* =========================================
@@ -104,56 +93,65 @@
     .card-image {
       width: 100%; height: 100%; border-radius: 0.35rem;
       background-size: 500% 100%; position: relative; overflow: hidden; 
-      background-color: #1e293b; /* 画像が無い時の仮背景 */
+      background-color: #1e293b;
     }
     .card-overlay {
       position: absolute; bottom: 0; left: 0; right: 0; height: 40%;
       background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
     }
 
-    /* ★修正: 未所持（シルエット）のスタイル */
-    .is-unowned .card-image {
-      /* 真っ黒ではなく、白黒にして少し暗くする（うっすら見えるカッコいい仕様） */
-      filter: grayscale(100%) brightness(0.25); 
-    }
+    /* 未所持（シルエット） */
+    .is-unowned .card-image { filter: grayscale(100%) brightness(0.25); }
     .is-unowned .card-wrapper {
-      background: #0f172a; /* 枠線を暗く */
-      border: 1px solid #1e293b;
-      box-shadow: none;
-      cursor: default; /* タップ不可に */
+      background: #0f172a; border: 1px solid #1e293b; box-shadow: none; cursor: default;
     }
-    .is-unowned .rarity-diamonds,
-    .is-unowned .attr-badge,
-    .is-unowned .card-overlay {
-      display: none; /* 未所持はアイコンや影を隠す */
-    }
+    .is-unowned .rarity-diamonds, .is-unowned .attr-badge, .is-unowned .card-overlay { display: none; }
 
-    /* ☆5の光エフェクト */
-    .is-star5 { box-shadow: 0 0 1rem rgba(255, 215, 0, 0.4); animation: pulseGlow 2s infinite alternate; }
-    .is-star5 .card-image::after {
-      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-      background: linear-gradient(to bottom right, rgba(255,255,255,0) 40%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 60%);
-      transform: rotate(45deg); animation: shine 3s infinite;
+    /* ★★★ ☆4演出：上から下に光が走るエフェクト ★★★ */
+    .is-star4 { box-shadow: 0 0 0.8rem rgba(255, 215, 0, 0.4); }
+    .is-star4 .card-image::after {
+      content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%);
+      animation: shineDown 3s infinite; pointer-events: none; z-index: 5;
     }
+    @keyframes shineDown { 0%, 20% { top: -100%; } 80%, 100% { top: 100%; } }
+
+    /* ★★★ ☆5演出：虹色のパラレルレア（格子状キラキラ） ★★★ */
+    .is-star5 { box-shadow: 0 0 1rem rgba(255, 215, 0, 0.6); animation: pulseGlow 2s infinite alternate; }
+    /* 虹色のグラデーション（ゆったり動く） */
+    .is-star5 .card-image::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,0,0,0.6), rgba(255,165,0,0.6), rgba(255,255,0,0.6), rgba(0,255,0,0.6), rgba(0,191,255,0.6), rgba(238,130,238,0.6), rgba(255,0,0,0.6));
+      background-size: 300% 300%;
+      animation: rainbowMove 4s linear infinite;
+      mix-blend-mode: color; /* キャラの色味に虹色を乗せる */
+      pointer-events: none; z-index: 4;
+    }
+    /* 格子状のプリズム発光 */
+    .is-star5 .card-image::after {
+      content: ''; position: absolute; inset: 0;
+      background-image: 
+        linear-gradient(45deg, rgba(255,255,255,0.5) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.5) 75%, rgba(255,255,255,0.5)), 
+        linear-gradient(45deg, rgba(255,255,255,0.5) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.5) 75%, rgba(255,255,255,0.5));
+      background-size: 8px 8px; /* キラキラの細かさ */
+      background-position: 0 0, 4px 4px;
+      mix-blend-mode: color-dodge; /* 光を強く反射させる */
+      opacity: 0.7; pointer-events: none; z-index: 5;
+    }
+    @keyframes pulseGlow { 0% { border-color: #ffd700; box-shadow: 0 0 0.5rem rgba(255,215,0,0.3); } 100% { border-color: #fff; box-shadow: 0 0 1.5rem rgba(255,255,255,0.6); } }
+    @keyframes rainbowMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
     /* ダイヤ（レアリティ） */
-    .rarity-diamonds {
-      position: absolute; bottom: 4px; left: 4px; display: flex; align-items: center; z-index: 10;
-    }
+    .rarity-diamonds { position: absolute; bottom: 4px; left: 4px; display: flex; align-items: center; z-index: 10; }
     .diamond {
-      width: 10px; height: 10px;
-      transform: rotate(45deg); border: 1px solid rgba(255, 255, 255, 0.7); margin-left: -4px;
+      width: 10px; height: 10px; transform: rotate(45deg); border: 1px solid rgba(255, 255, 255, 0.7); margin-left: -4px;
     }
     .diamond:first-child { margin-left: 0; }
-    
-    /* ダイヤのレアリティごとの色 */
-    .diamond-silver { background: linear-gradient(135deg, #e2e8f0, #94a3b8); } /* ☆1〜☆3 */
-    .diamond-gold { background: linear-gradient(135deg, #fef08a, #eab308); border-color: #fff; } /* ☆4 */
+    .diamond-silver { background: linear-gradient(135deg, #e2e8f0, #94a3b8); } 
+    .diamond-gold { background: linear-gradient(135deg, #fef08a, #eab308); border-color: #fff; } 
     .diamond-rainbow { 
-      background: linear-gradient(135deg, #f87171, #facc15, #4ade80, #60a5fa, #c084fc); /* ☆5 */
-      background-size: 200% 200%;
-      animation: mysticGlow 3s ease infinite;
-      border-color: #fff;
+      background: linear-gradient(135deg, #f87171, #facc15, #4ade80, #60a5fa, #c084fc); 
+      background-size: 200% 200%; animation: mysticGlow 3s ease infinite; border-color: #fff;
     }
 
     /* 属性バッジ */
@@ -165,7 +163,9 @@
     .attr-桃 { background: linear-gradient(135deg, #f9a8d4, #db2777); }
     .attr-紫 { background: linear-gradient(135deg, #d8b4fe, #9333ea); }
 
-    /* モーダル */
+    /* =========================================
+       6. モーダル（詳細画面）
+       ========================================= */
     #modal-overlay {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.85); display: none; justify-content: center;
@@ -175,16 +175,23 @@
       background: #1e293b; border-radius: 1rem; width: 80%; padding: 1.5rem;
       border: 0.1rem solid #334155; position: relative;
     }
-    .modal-close { position: absolute; top: 0.5rem; right: 1rem; font-size: 1.5rem; color: #94a3b8; cursor: pointer; }
-    #modal-image-box {
-      width: 100%; aspect-ratio: 1 / 1; margin: 0 auto 1rem; border-radius: 0.5rem;
-      border: 0.15rem solid #cbd5e1; background-size: 500% 100%;
+    .modal-close { position: absolute; top: 0.5rem; right: 1rem; font-size: 1.5rem; color: #94a3b8; cursor: pointer; z-index: 110; }
+    
+    /* モーダル内の画像にもエフェクトを乗せるための専用ラッパー */
+    #modal-image-wrapper {
+      width: 100%; max-width: 150px; aspect-ratio: 1 / 1;
+      margin: 0 auto 1rem; border-radius: 0.5rem; padding: 0.15rem;
+      background: linear-gradient(135deg, #64748b, #334155);
+      position: relative; cursor: default; /* タップのエフェクトを無効化 */
     }
+    #modal-image-box {
+      width: 100%; height: 100%; border-radius: 0.35rem;
+      background-size: 500% 100%; position: relative; overflow: hidden;
+    }
+
     #modal-name { text-align: center; margin: 0 0 0.5rem 0; font-size: 1.2rem; }
     #modal-info { text-align: center; color: #fbbf24; font-size: 0.9rem; margin-bottom: 1rem; }
 
-    @keyframes pulseGlow { 0% { border-color: #ffd700; box-shadow: 0 0 0.5rem rgba(255,215,0,0.3); } 100% { border-color: #fff; box-shadow: 0 0 1.5rem rgba(255,255,255,0.6); } }
-    @keyframes shine { 0%, 20% { top: -100%; left: -100%; } 100% { top: 100%; left: 100%; } }
     @keyframes mysticGlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
   </style>
 </head>
@@ -225,7 +232,11 @@
     <div id="modal-overlay" onclick="closeModal()">
       <div id="modal-content" onclick="event.stopPropagation()">
         <div class="modal-close" onclick="closeModal()">×</div>
-        <div id="modal-image-box"></div>
+        
+        <div id="modal-image-wrapper">
+          <div id="modal-image-box" class="card-image"></div>
+        </div>
+
         <h3 id="modal-name">キャラクター名</h3>
         <div id="modal-info">属性 / ジャンル</div>
       </div>
@@ -346,8 +357,10 @@
         
         if (isPokedexMode && !isOwned) {
           wrapperEl.classList.add('is-unowned');
-        } else if (card.rarity === 5) {
-          wrapperEl.classList.add('is-star5');
+        } else {
+          // ★ レアリティごとのクラス（エフェクト）を付与
+          if (card.rarity === 5) wrapperEl.classList.add('is-star5');
+          if (card.rarity === 4) wrapperEl.classList.add('is-star4');
         }
         
         const imgEl = document.createElement('div');
@@ -389,14 +402,24 @@
       });
     }
 
+    // ★ モーダル（詳細画面）を開く時の処理
     function openModal(card, positionX) {
+      const modalWrapper = document.getElementById('modal-image-wrapper');
+      
+      // 一旦クラスをリセットしてから、該当レアリティのエフェクトを付与
+      modalWrapper.className = ''; 
+      if (card.rarity === 5) modalWrapper.classList.add('is-star5');
+      if (card.rarity === 4) modalWrapper.classList.add('is-star4');
+
       const imageBox = document.getElementById('modal-image-box');
       imageBox.style.backgroundImage = `url('${card.imageUrl}')`;
       imageBox.style.backgroundPosition = `${positionX}% 0%`; 
+      
       document.getElementById('modal-name').innerText = card.name;
       document.getElementById('modal-info').innerText = `★${card.rarity} / 属性: ${card.attribute} / ${card.genre}`;
       document.getElementById('modal-overlay').style.display = 'flex';
     }
+    
     function closeModal() {
       document.getElementById('modal-overlay').style.display = 'none';
     }
