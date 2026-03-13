@@ -3,57 +3,196 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>カード一覧</title>
+  <title>カードコレクション</title>
   <style>
-    /* 全体設定 */
-    body {
-      font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', sans-serif;
-      background-color: #0d1117; 
-      margin: 0;
-      padding: 20px 15px;
-      color: #e2e8f0;
+    /* =========================================
+       1. 全体レイアウト（16:9のモバイルファースト設計）
+       ========================================= */
+    :root {
+      font-size: 16px; /* remの基準値 */
     }
+    body {
+      margin: 0;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', sans-serif;
+      color: #e2e8f0;
+      overflow: hidden; /* スクロールはアプリ内で行う */
+    }
+
+    /* ★ 画面比率を強制的に16:9に保つアプリコンテナ ★ */
+    #app {
+      width: 100vw;
+      height: 100vh;
+      aspect-ratio: 9 / 16;
+      max-width: calc(100vh * 9 / 16);
+      max-height: calc(100vw * 16 / 9);
+      background-color: #0d1117;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 2rem rgba(255,255,255,0.1);
+    }
+
+    /* 各画面（ビュー）のコンテナ */
+    .view {
+      flex: 1;
+      display: none; /* デフォルトは非表示 */
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 3vw;
+    }
+    .view.active {
+      display: flex;
+    }
+
     h2 {
       text-align: center;
       font-weight: 300;
-      letter-spacing: 2px;
-      margin-bottom: 25px;
-    }
-    
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-      gap: 20px;
-      justify-items: center;
+      letter-spacing: 0.2rem;
+      font-size: 1.2rem;
+      margin: 1rem 0;
+      flex-shrink: 0;
     }
 
-    /* ★ 外枠 */
+    /* =========================================
+       2. 下部ナビゲーション（タブ切り替え）
+       ========================================= */
+    .bottom-nav {
+      height: 4rem;
+      background-color: #1e293b;
+      display: flex;
+      border-top: 1px solid #334155;
+      flex-shrink: 0;
+      z-index: 50;
+    }
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #94a3b8;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .nav-btn.active {
+      color: #fbbf24;
+      background-color: #334155;
+      border-bottom: 0.2rem solid #fbbf24;
+    }
+
+    /* =========================================
+       3. ガチャ画面のスタイル
+       ========================================= */
+    .banner-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .gacha-banner {
+      width: 100%;
+      aspect-ratio: 3 / 1;
+      border-radius: 0.8rem;
+      background-color: #334155;
+      background-size: cover;
+      background-position: center;
+      border: 0.15rem solid #64748b;
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.5);
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-shadow: 0 0.1rem 0.3rem #000;
+      transition: transform 0.1s;
+    }
+    .gacha-banner:active { transform: scale(0.97); }
+
+    /* ガチャ実行画面 */
+    .pull-actions {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 2rem;
+      gap: 1rem;
+    }
+    .btn-pull {
+      flex: 1;
+      padding: 1rem 0;
+      border-radius: 0.5rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      border: 0.1rem solid #60a5fa;
+      color: white;
+      box-shadow: 0 0.4rem 0.8rem rgba(0,0,0,0.4);
+    }
+    .btn-pull-5 {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-color: #fbbf24;
+    }
+    .btn-pull:active { transform: translateY(0.2rem); }
+
+    /* ガチャ結果画面 */
+    .result-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 3vw;
+      margin-top: 1rem;
+    }
+    .result-grid .card-wrapper {
+      width: 25vw; /* 結果は少し大きめに表示 */
+      max-width: 6rem;
+    }
+    .back-btn {
+      margin-top: 3rem;
+      padding: 0.8rem;
+      text-align: center;
+      background-color: #475569;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+
+    /* =========================================
+       4. 図鑑画面（横5枚並び）
+       ========================================= */
+    .pokedex-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr); /* 確実に横5列にする */
+      gap: 1.5vw;
+      padding-bottom: 2rem;
+    }
+
+    /* =========================================
+       5. カードのデザイン（レスポンシブ化）
+       ========================================= */
     .card-wrapper {
       position: relative;
       width: 100%;
       aspect-ratio: 1 / 1; 
-      border-radius: 12px;
-      padding: 2px; 
+      border-radius: 0.5rem;
+      padding: 0.15rem; 
       background: linear-gradient(135deg, #64748b, #334155);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+      box-shadow: 0 0.4rem 0.8rem rgba(0,0,0,0.5);
       cursor: pointer;
-      transition: transform 0.1s;
     }
-    .card-wrapper:active {
-      transform: scale(0.95);
-    }
-
-    /* ★ 内側の画像部分 */
     .card-image {
       width: 100%;
       height: 100%;
-      border-radius: 10px;
+      border-radius: 0.35rem;
       background-size: 500% 100%;
       position: relative;
       overflow: hidden; 
     }
-
-    /* 画像下部のシャドウ（アイコンを見やすくする） */
     .card-overlay {
       position: absolute;
       bottom: 0; left: 0; right: 0;
@@ -61,9 +200,9 @@
       background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
     }
 
-    /* ＝＝＝ ☆5限定：カード全体が光るエフェクト ＝＝＝ */
+    /* ☆5の光エフェクト */
     .is-star5 {
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 1rem rgba(255, 215, 0, 0.4);
       animation: pulseGlow 2s infinite alternate;
     }
     .is-star5 .card-image::after {
@@ -74,158 +213,142 @@
       background: linear-gradient(to bottom right, rgba(255,255,255,0) 40%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 60%);
       transform: rotate(45deg);
       animation: shine 3s infinite;
-      pointer-events: none;
-    }
-    @keyframes pulseGlow {
-      0% { border-color: #ffd700; box-shadow: 0 0 10px rgba(255,215,0,0.3); }
-      100% { border-color: #fff; box-shadow: 0 0 25px rgba(255,255,255,0.6); }
-    }
-    @keyframes shine {
-      0% { top: -100%; left: -100%; }
-      20% { top: 100%; left: 100%; }
-      100% { top: 100%; left: 100%; }
     }
 
-    /* ＝＝＝ 左下：レアリティのダイヤ（図形で表現） ＝＝＝ */
+    /* ダイヤ（レアリティ） */
     .rarity-diamonds {
       position: absolute;
-      bottom: 8px; /* 下からの位置 */
-      left: 8px;   /* 左からの位置 */
+      bottom: 0.5vw;
+      left: 0.5vw;
       display: flex;
       align-items: center;
       z-index: 10;
     }
     .diamond {
-      width: 9px;
-      height: 9px;
-      background: linear-gradient(135deg, #fef08a, #eab308); /* 輝くゴールド */
-      transform: rotate(45deg); /* 四角を45度回転させてひし形に */
-      border: 1px solid rgba(255, 255, 255, 0.7); /* 白い縁取りでキラキラ感を出す */
-      box-shadow: 0 2px 4px rgba(0,0,0,0.8);
-      margin-left: -4px; /* ここで少しずつ重ねる！ */
+      width: 1.8vw; /* 画面幅に応じたサイズ */
+      max-width: 0.7rem;
+      aspect-ratio: 1 / 1;
+      background: linear-gradient(135deg, #fef08a, #eab308);
+      transform: rotate(45deg);
+      border: 0.1rem solid rgba(255, 255, 255, 0.7);
+      margin-left: -0.8vw;
     }
-    .diamond:first-child {
-      margin-left: 0; /* 1個目は重ねない */
-    }
+    .diamond:first-child { margin-left: 0; }
 
-    /* ＝＝＝ 右下：属性バッジ（枠内に収める） ＝＝＝ */
+    /* 属性バッジ */
     .attr-badge {
       position: absolute;
-      bottom: 5px; /* 上ではなく下に変更し、枠内に収める */
-      right: 5px;  /* 枠内に収める */
-      width: 14px;
-      height: 14px;
+      bottom: 0.3vw;
+      right: 0.3vw;
+      width: 2.5vw;
+      max-width: 1rem;
+      aspect-ratio: 1 / 1;
       border-radius: 50%;
-      border: 1.5px solid rgba(255,255,255,0.8);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      border: 0.1rem solid rgba(255,255,255,0.8);
       z-index: 10;
     }
     .attr-黄 { background: linear-gradient(135deg, #fde047, #ca8a04); }
     .attr-桃 { background: linear-gradient(135deg, #f9a8d4, #db2777); }
     .attr-紫 { background: linear-gradient(135deg, #d8b4fe, #9333ea); }
 
-    /* ＝＝＝ モーダル（詳細画面） ＝＝＝ */
+    /* =========================================
+       6. モーダル（図鑑詳細）
+       ========================================= */
     #modal-overlay {
-      position: fixed;
+      position: absolute; /* アプリ内に収める */
       top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.85);
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 100;
-      backdrop-filter: blur(5px);
-      opacity: 0;
-      transition: opacity 0.2s;
+      backdrop-filter: blur(0.3rem);
     }
     #modal-content {
       background: #1e293b;
-      border-radius: 16px;
-      width: 85%;
-      max-width: 320px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      border: 1px solid #334155;
+      border-radius: 1rem;
+      width: 80%;
+      padding: 1.5rem;
+      border: 0.1rem solid #334155;
       position: relative;
-      transform: translateY(20px);
-      transition: transform 0.2s;
     }
     .modal-close {
       position: absolute;
-      top: 10px; right: 15px;
-      font-size: 24px;
+      top: 0.5rem; right: 1rem;
+      font-size: 1.5rem;
       color: #94a3b8;
       cursor: pointer;
     }
     #modal-image-box {
-      width: 150px;
-      height: 150px;
-      margin: 0 auto 15px;
-      border-radius: 12px;
-      border: 2px solid #cbd5e1;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto 1rem;
+      border-radius: 0.5rem;
+      border: 0.15rem solid #cbd5e1;
       background-size: 500% 100%;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
-    #modal-name {
-      font-size: 20px;
-      font-weight: bold;
-      text-align: center;
-      margin: 0 0 5px 0;
+    #modal-name { text-align: center; margin: 0 0 0.5rem 0; font-size: 1.2rem; }
+    #modal-info { text-align: center; color: #fbbf24; font-size: 0.9rem; margin-bottom: 1rem; }
+
+    @keyframes pulseGlow {
+      0% { border-color: #ffd700; box-shadow: 0 0 0.5rem rgba(255,215,0,0.3); }
+      100% { border-color: #fff; box-shadow: 0 0 1.5rem rgba(255,255,255,0.6); }
     }
-    #modal-info {
-      text-align: center;
-      color: #fbbf24;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-    .stats-container {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-    .stat-box {
-      flex: 1;
-      background: #0f172a;
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-    }
-    .stat-label {
-      font-size: 11px;
-      color: #94a3b8;
-      margin-bottom: 4px;
-    }
-    .stat-value {
-      font-size: 18px;
-      font-weight: bold;
-      color: #f8fafc;
+    @keyframes shine {
+      0%, 20% { top: -100%; left: -100%; }
+      100% { top: 100%; left: 100%; }
     }
   </style>
 </head>
 <body>
 
-  <h2>CARD COLLECTION</h2>
-  <div id="card-container" class="container"></div>
+  <div id="app">
+    
+    <div id="view-gacha" class="view active">
+      <h2>GACHA</h2>
+      <div id="gacha-banners" class="banner-list">
+        </div>
+    </div>
 
-  <div id="modal-overlay" onclick="closeModal()">
-    <div id="modal-content" onclick="event.stopPropagation()">
-      <div class="modal-close" onclick="closeModal()">×</div>
-      <div id="modal-image-box"></div>
-      <h3 id="modal-name">キャラクター名</h3>
-      <div id="modal-info">属性 / ジャンル</div>
-      <div class="stats-container">
-        <div class="stat-box">
-          <div class="stat-label">POWER</div>
-          <div id="modal-power" class="stat-value">0</div>
+    <div id="view-gacha-pull" class="view">
+      <h2 id="pull-gacha-title">ガチャ名</h2>
+      <div id="pull-banner-preview" class="gacha-banner" style="cursor: default;"></div>
+      <div class="pull-actions">
+        <div class="btn-pull" onclick="executeGacha(1)">1回 引く</div>
+        <div class="btn-pull btn-pull-5" onclick="executeGacha(5)">5回 引く</div>
+      </div>
+      <div class="back-btn" onclick="switchView('view-gacha')">一覧へ戻る</div>
+    </div>
+
+    <div id="view-gacha-result" class="view">
+      <h2>RESULT</h2>
+      <div id="gacha-result-container" class="result-grid">
         </div>
-        <div class="stat-box">
-          <div class="stat-label">SKILL</div>
-          <div id="modal-skill" class="stat-value">0</div>
+      <div class="back-btn" onclick="switchView('view-gacha-pull')">もう一度引く</div>
+    </div>
+
+    <div id="view-pokedex" class="view">
+      <h2>POKEDEX</h2>
+      <div id="pokedex-container" class="pokedex-grid">
         </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div id="tab-gacha" class="nav-btn active" onclick="switchTab('gacha')">ガチャ</div>
+      <div id="tab-pokedex" class="nav-btn" onclick="switchTab('pokedex')">図鑑</div>
+    </div>
+
+    <div id="modal-overlay" onclick="closeModal()">
+      <div id="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-close" onclick="closeModal()">×</div>
+        <div id="modal-image-box"></div>
+        <h3 id="modal-name">キャラクター名</h3>
+        <div id="modal-info">★ / 属性: - / ジャンル: -</div>
       </div>
     </div>
-  </div>
 
-  <script>
+  </div> <script>
+    // ★ ホワイトデーのデータもこっそり追加！
     const rawData = `
 001.png 黄 コンサート ニコニコ・ニコリ
 002.png 紫 コンサート 白髪G
@@ -233,9 +356,11 @@
 004.png 紫 日常 ニコニコ・ニコリ
 005.png 桃 日常 白髪G
 006.png 黄 日常 デブG
-007.png 桃 お花見 ニコニコ・ニコリ
-008.png 桃 お花見 白髪G
-009.png 桃 お花見 デブG
+007.png 桃 花見 ニコニコ・ニコリ
+008.png 桃 花見 白髪G
+009.png 桃 花見 デブG
+010.png 桃 ホワイトデー ニコニコ・ニコリ
+011.png 紫 ホワイトデー デブG
     `;
 
     class Card {
@@ -246,22 +371,17 @@
         this.name = name;
         this.attribute = attribute;
         this.imageUrl = imageUrl;
-        this.power = rarity * 1200 + Math.floor(Math.random() * 500); 
-        this.skill = rarity * 5 + Math.floor(Math.random() * 3);
       }
     }
 
     const allCards = [];
-    const lines = rawData.trim().split('\n');
-    
-    lines.forEach(line => {
+    rawData.trim().split('\n').forEach(line => {
       const parts = line.trim().split(/\s+/);
       if (parts.length >= 4) {
         const fileName = parts[0];
         const attribute = parts[1];
         const genre = parts[2];
         const name = parts[3];
-        
         const baseId = fileName.split('.')[0];
         const imageUrl = `./public/image/card/${fileName}`;
 
@@ -271,76 +391,144 @@
       }
     });
 
-    const container = document.getElementById('card-container');
+    // =========================================
+    // ガチャの設定データ
+    // =========================================
+    const gachaData = [
+      { id: 'normal', name: 'ノーマルガチャ', image: '001.png', genres: ['コンサート', '日常'] },
+      { id: 'hanami', name: 'お花見ガチャ', image: '002.png', genres: ['花見'] },
+      { id: 'whiteday', name: 'ホワイトデーガチャ', image: '003.png', genres: ['ホワイトデー'] }
+    ];
 
-    allCards.forEach(card => {
-      const wrapperEl = document.createElement('div');
-      wrapperEl.className = 'card-wrapper';
-      if(card.rarity === 5) wrapperEl.classList.add('is-star5');
+    let currentGacha = null; // 現在選択中のガチャ
+
+    // 画面切り替え関数
+    function switchView(viewId) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+    }
+
+    // タブ切り替え関数
+    function switchTab(tab) {
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
       
-      const imgEl = document.createElement('div');
-      imgEl.className = 'card-image';
-      imgEl.style.backgroundImage = `url('${card.imageUrl}')`;
-      const positionX = (card.rarity - 1) * 25;
-      imgEl.style.backgroundPosition = `${positionX}% 0%`;
+      if (tab === 'gacha') {
+        switchView('view-gacha');
+      } else if (tab === 'pokedex') {
+        switchView('view-pokedex');
+        renderCards(allCards, 'pokedex-container'); // 図鑑タブを開いた時に全カード描画
+      }
+    }
 
-      const overlayEl = document.createElement('div');
-      overlayEl.className = 'card-overlay';
-      imgEl.appendChild(overlayEl);
+    // ガチャ選択画面の描画
+    function initGachaList() {
+      const container = document.getElementById('gacha-banners');
+      gachaData.forEach(gacha => {
+        const banner = document.createElement('div');
+        banner.className = 'gacha-banner';
+        // 画像がない場合は名前をテキストで表示、画像がある場合は背景に
+        banner.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('./public/image/gacha/${gacha.image}')`;
+        banner.innerText = gacha.name;
+        
+        banner.onclick = () => {
+          currentGacha = gacha;
+          document.getElementById('pull-gacha-title').innerText = gacha.name;
+          document.getElementById('pull-banner-preview').style.backgroundImage = banner.style.backgroundImage;
+          document.getElementById('pull-banner-preview').innerText = gacha.name;
+          switchView('view-gacha-pull');
+        };
+        container.appendChild(banner);
+      });
+    }
 
-      // ★ ダイヤの生成（文字ではなく図形を重ねる）
-      const diamondsEl = document.createElement('div');
-      diamondsEl.className = 'rarity-diamonds';
-      for (let i = 0; i < card.rarity; i++) {
-        const diamond = document.createElement('div');
-        diamond.className = 'diamond';
-        diamondsEl.appendChild(diamond);
+    // ★ ガチャを引くロジック ★
+    function executeGacha(times) {
+      // 1. 現在のガチャのジャンルに合うカードだけをピックアップ
+      const pool = allCards.filter(c => currentGacha.genres.includes(c.genre));
+      if (pool.length === 0) return alert('このガチャに排出されるカードがありません');
+
+      const results = [];
+      // 2. 確率設定（例: ☆1=40%, ☆2=30%, ☆3=20%, ☆4=8%, ☆5=2%）
+      for (let i = 0; i < times; i++) {
+        const rand = Math.random() * 100;
+        let targetRarity = 1;
+        if (rand < 2) targetRarity = 5;
+        else if (rand < 10) targetRarity = 4;
+        else if (rand < 30) targetRarity = 3;
+        else if (rand < 60) targetRarity = 2;
+
+        // 対象レアリティのカードからランダムに1枚選ぶ
+        const rarityPool = pool.filter(c => c.rarity === targetRarity);
+        // 万が一そのレアリティが存在しない場合はプール全体から引く
+        const finalPool = rarityPool.length > 0 ? rarityPool : pool; 
+        
+        const pulledCard = finalPool[Math.floor(Math.random() * finalPool.length)];
+        results.push(pulledCard);
       }
 
-      // 属性アイコン
-      const attrEl = document.createElement('div');
-      attrEl.className = `attr-badge attr-${card.attribute}`;
+      // 結果画面に描画して遷移
+      renderCards(results, 'gacha-result-container');
+      switchView('view-gacha-result');
+    }
 
-      wrapperEl.appendChild(imgEl);
-      wrapperEl.appendChild(diamondsEl);
-      wrapperEl.appendChild(attrEl);
-      container.appendChild(wrapperEl);
+    // カードのHTML要素を生成してコンテナに入れる共通関数
+    function renderCards(cardsArray, containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = ''; // 一旦クリア
 
-      wrapperEl.addEventListener('click', () => openModal(card, positionX));
-    });
+      cardsArray.forEach(card => {
+        const wrapperEl = document.createElement('div');
+        wrapperEl.className = 'card-wrapper';
+        if(card.rarity === 5) wrapperEl.classList.add('is-star5');
+        
+        const imgEl = document.createElement('div');
+        imgEl.className = 'card-image';
+        imgEl.style.backgroundImage = `url('${card.imageUrl}')`;
+        const positionX = (card.rarity - 1) * 25;
+        imgEl.style.backgroundPosition = `${positionX}% 0%`;
 
-    // モーダル制御
-    const modalOverlay = document.getElementById('modal-overlay');
-    const modalContent = document.getElementById('modal-content');
+        const overlayEl = document.createElement('div');
+        overlayEl.className = 'card-overlay';
+        imgEl.appendChild(overlayEl);
 
+        const diamondsEl = document.createElement('div');
+        diamondsEl.className = 'rarity-diamonds';
+        for (let i = 0; i < card.rarity; i++) {
+          const diamond = document.createElement('div');
+          diamond.className = 'diamond';
+          diamondsEl.appendChild(diamond);
+        }
+
+        const attrEl = document.createElement('div');
+        attrEl.className = `attr-badge attr-${card.attribute}`;
+
+        wrapperEl.appendChild(imgEl);
+        wrapperEl.appendChild(diamondsEl);
+        wrapperEl.appendChild(attrEl);
+        
+        wrapperEl.onclick = () => openModal(card, positionX);
+        container.appendChild(wrapperEl);
+      });
+    }
+
+    // モーダル処理
     function openModal(card, positionX) {
       const imageBox = document.getElementById('modal-image-box');
       imageBox.style.backgroundImage = `url('${card.imageUrl}')`;
       imageBox.style.backgroundPosition = `${positionX}% 0%`; 
-
       document.getElementById('modal-name').innerText = card.name;
+      document.getElementById('modal-info').innerText = `${'★'.repeat(card.rarity)} / 属性: ${card.attribute} / ${card.genre}`;
       
-      // モーダルの中は分かりやすく文字の星にしておきます
-      const starsText = '★'.repeat(card.rarity);
-      document.getElementById('modal-info').innerText = `${starsText} / 属性: ${card.attribute} / ${card.genre}`;
-      
-      document.getElementById('modal-power').innerText = card.power.toLocaleString();
-      document.getElementById('modal-skill').innerText = card.skill;
-
-      modalOverlay.style.display = 'flex';
-      setTimeout(() => {
-        modalOverlay.style.opacity = '1';
-        modalContent.style.transform = 'translateY(0)';
-      }, 10);
+      document.getElementById('modal-overlay').style.display = 'flex';
     }
-
     function closeModal() {
-      modalOverlay.style.opacity = '0';
-      modalContent.style.transform = 'translateY(20px)';
-      setTimeout(() => {
-        modalOverlay.style.display = 'none';
-      }, 200); 
+      document.getElementById('modal-overlay').style.display = 'none';
     }
+
+    // 初期化
+    initGachaList();
+    renderCards(allCards, 'pokedex-container'); // 裏で図鑑を作っておく
   </script>
 </body>
 </html>
