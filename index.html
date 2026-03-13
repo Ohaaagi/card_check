@@ -56,8 +56,14 @@
       border: 0.15rem solid #64748b; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.5);
       cursor: pointer; display: flex; justify-content: center; align-items: center;
       font-size: 1.2rem; font-weight: bold; text-shadow: 0 0.1rem 0.3rem #000;
+      overflow: hidden;
     }
     .gacha-banner:active { transform: scale(0.97); }
+    /* バナー内のテキストに黒帯をつけて見やすくする */
+    .gacha-banner-text {
+      background: rgba(0,0,0,0.5); padding: 0.2rem 1rem; border-radius: 2rem;
+    }
+
     .pull-actions { display: flex; justify-content: space-around; margin-top: 2rem; gap: 1rem; }
     .btn-pull {
       flex: 1; padding: 1rem 0; border-radius: 0.5rem; font-size: 1.1rem;
@@ -107,7 +113,7 @@
     }
     .is-unowned .rarity-diamonds, .is-unowned .attr-badge, .is-unowned .card-overlay { display: none; }
 
-    /* ★★★ ☆4演出：上から下に光が走るエフェクト ★★★ */
+    /* ☆4演出 */
     .is-star4 { box-shadow: 0 0 0.8rem rgba(255, 215, 0, 0.4); }
     .is-star4 .card-image::after {
       content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
@@ -116,24 +122,21 @@
     }
     @keyframes shineDown { 0%, 20% { top: -100%; } 80%, 100% { top: 100%; } }
 
-    /* ★★★ ☆5演出：虹色の斜めホログラム ★★★ */
+    /* ☆5演出 */
     .is-star5 {
       border: 3px solid #fff; 
       box-shadow: 0 0 1rem rgba(255, 215, 0, 0.4), inset 0 0 0.5rem rgba(255, 255, 255, 0.3);
     }
     .is-star5 .card-image::after {
-      content: ''; position: absolute;
-      top: -150%; right: -150%; width: 300%; height: 300%;
+      content: ''; position: absolute; top: -150%; right: -150%; width: 300%; height: 300%;
       background: linear-gradient(
-        to left bottom, 
-        rgba(255, 255, 255, 0) 42%, rgba(255, 100, 100, 0.8) 46%, rgba(255, 255, 100, 0.8) 48%, 
-        rgba(100, 255, 100, 0.8) 50%, rgba(100, 200, 255, 0.8) 52%, rgba(200, 100, 255, 0.8) 54%, 
-        rgba(255, 255, 255, 0) 58%
+        to left bottom, rgba(255, 255, 255, 0) 42%, rgba(255, 100, 100, 0.8) 46%, 
+        rgba(255, 255, 100, 0.8) 48%, rgba(100, 255, 100, 0.8) 50%, 
+        rgba(100, 200, 255, 0.8) 52%, rgba(200, 100, 255, 0.8) 54%, rgba(255, 255, 255, 0) 58%
       );
       background-size: 200% 200%; mix-blend-mode: color-dodge; 
       animation: diagonalShine 3s ease-in-out infinite; pointer-events: none; z-index: 5;
     }
-
     @keyframes diagonalShine {
       0% { background-position: 100% 0%; opacity: 0; }
       20% { background-position: 100% 0%; opacity: 1; }
@@ -141,11 +144,9 @@
       100% { background-position: 0% 100%; opacity: 0; }
     }
 
-    /* ダイヤ（レアリティ） */
+    /* ダイヤ・属性バッジ */
     .rarity-diamonds { position: absolute; bottom: 4px; left: 4px; display: flex; align-items: center; z-index: 10; }
-    .diamond {
-      width: 10px; height: 10px; transform: rotate(45deg); border: 1px solid rgba(255, 255, 255, 0.7); margin-left: -4px;
-    }
+    .diamond { width: 10px; height: 10px; transform: rotate(45deg); border: 1px solid rgba(255, 255, 255, 0.7); margin-left: -4px; }
     .diamond:first-child { margin-left: 0; }
     .diamond-silver { background: linear-gradient(135deg, #e2e8f0, #94a3b8); } 
     .diamond-gold { background: linear-gradient(135deg, #fef08a, #eab308); border-color: #fff; } 
@@ -153,8 +154,6 @@
       background: linear-gradient(135deg, #f87171, #facc15, #4ade80, #60a5fa, #c084fc); 
       background-size: 200% 200%; animation: mysticGlow 3s ease infinite; border-color: #fff;
     }
-
-    /* 属性バッジ */
     .attr-badge {
       position: absolute; bottom: 3px; right: 3px; width: 14px; height: 14px;
       border-radius: 50%; border: 1px solid rgba(255,255,255,0.8); z-index: 10;
@@ -172,23 +171,17 @@
       align-items: center; z-index: 100; backdrop-filter: blur(0.3rem);
     }
     #modal-content {
-      background: #1e293b; border-radius: 1rem; width: 80%; padding: 1.5rem;
-      border: 0.1rem solid #334155; position: relative;
+      background: #1e293b; border-radius: 1rem; width: 80%; padding: 1.5rem; border: 0.1rem solid #334155; position: relative;
     }
     .modal-close { position: absolute; top: 0.5rem; right: 1rem; font-size: 1.5rem; color: #94a3b8; cursor: pointer; z-index: 110; }
     
     #modal-image-wrapper {
-      width: 100%; max-width: 150px; aspect-ratio: 1 / 1;
-      margin: 0 auto 1rem; border-radius: 0.5rem; padding: 0.15rem;
-      background: linear-gradient(135deg, #64748b, #334155);
-      position: relative; cursor: default;
+      width: 100%; max-width: 150px; aspect-ratio: 1 / 1; margin: 0 auto 1rem; border-radius: 0.5rem; padding: 0.15rem;
+      background: linear-gradient(135deg, #64748b, #334155); position: relative; cursor: default;
     }
     #modal-image-box {
-      width: 100%; height: 100%; border-radius: 0.35rem;
-      background-size: 500% 100%; position: relative; overflow: hidden;
-      background-color: #1e293b;
+      width: 100%; height: 100%; border-radius: 0.35rem; background-size: 500% 100%; position: relative; overflow: hidden; background-color: #1e293b;
     }
-
     #modal-name { text-align: center; margin: 0 0 0.5rem 0; font-size: 1.2rem; }
     #modal-info { text-align: center; color: #fbbf24; font-size: 0.9rem; margin-bottom: 1rem; }
 
@@ -197,71 +190,45 @@
     /* =========================================
        7. ガチャ演出（フリップ・昇格）
        ========================================= */
-    .result-grid { perspective: 1000px; } /* 3D空間の奥行きを設定 */
-
-    /* ガチャ結果画面でのみ適用するラッパー初期化 */
+    .result-grid { perspective: 1000px; }
     .card-wrapper.in-gacha { background: transparent; box-shadow: none; border: none; padding: 0; cursor: pointer; }
-    
     .card-inner {
-      position: relative; width: 100%; height: 100%;
-      transform-style: preserve-3d;
+      position: relative; width: 100%; height: 100%; transform-style: preserve-3d;
       transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
-    /* レアリティ別のめくり速度の違い */
     .card-wrapper.flip-star4 .card-inner { transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     .card-wrapper.flip-star5 .card-inner { transition: transform 2.5s ease-in-out; }
-
-    /* めくられた状態 */
     .card-wrapper.is-flipped .card-inner { transform: rotateY(180deg); }
 
-    /* Safari等の透けバグ対策 */
     .card-front, .card-back {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden; border-radius: 0.5rem;
+      -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 0.5rem;
     }
-    
-    /* 表面（元のカードデザインをここに移植） */
     .card-front {
-      transform: rotateY(180deg); padding: 0.15rem;
-      background: linear-gradient(135deg, #64748b, #334155);
+      transform: rotateY(180deg); padding: 0.15rem; background: linear-gradient(135deg, #64748b, #334155);
       box-shadow: 0 0.4rem 0.8rem rgba(0,0,0,0.5);
     }
     .is-star4 .card-front { box-shadow: 0 0 0.8rem rgba(255, 215, 0, 0.4); }
-    .is-star5 .card-front {
-      border: 3px solid #fff; box-shadow: 0 0 1rem rgba(255, 215, 0, 0.4), inset 0 0 0.5rem rgba(255, 255, 255, 0.3);
-    }
+    .is-star5 .card-front { border: 3px solid #fff; box-shadow: 0 0 1rem rgba(255, 215, 0, 0.4), inset 0 0 0.5rem rgba(255, 255, 255, 0.3); }
 
-    /* 裏面のデザイン */
     .card-back {
-      background: linear-gradient(135deg, #475569, #1e293b);
-      border: 2px solid #94a3b8;
-      display: flex; justify-content: center; align-items: center;
+      background: linear-gradient(135deg, #475569, #1e293b); border: 2px solid #94a3b8; display: flex; justify-content: center; align-items: center;
     }
     .card-back::after { content: '？'; font-size: 2rem; color: #94a3b8; font-weight: bold; }
-    
-    /* 初期の裏面でレアリティの匂わせ */
     .card-back.back-star4 { border-color: #fbbf24; background: linear-gradient(135deg, #b45309, #78350f); }
     .card-back.back-star4::after { color: #fbbf24; }
     .card-back.back-star5 { border-color: #fca5a5; background: linear-gradient(135deg, #4c1d95, #1e1b4b); }
     .card-back.back-star5::after { color: #fca5a5; }
 
-    /* 昇格演出のアニメーション（揺れ） */
     @keyframes fakeoutShake {
       0%, 100% { transform: translateX(0) scale(1); filter: brightness(1); }
       10%, 30%, 50%, 70% { transform: translateX(-5px) scale(1.05); }
       20%, 40%, 60%, 80% { transform: translateX(5px) scale(1.05); }
       90% { transform: scale(1.1); filter: brightness(2); }
     }
-    
-    .card-wrapper.is-fakeout.is-flipped {
-      animation: fakeoutShake 1.5s forwards;
-    }
+    .card-wrapper.is-fakeout.is-flipped { animation: fakeoutShake 1.5s forwards; }
     .card-wrapper.is-fakeout.is-flipped .card-inner {
-      transition: transform 0.5s ease-out !important;
-      transition-delay: 1.5s !important; /* 揺れが終わってからめくる */
-      transform: rotateY(180deg);
+      transition: transform 0.5s ease-out !important; transition-delay: 1.5s !important; transform: rotateY(180deg);
     }
   </style>
 </head>
@@ -305,11 +272,7 @@
     <div id="modal-overlay" onclick="closeModal()">
       <div id="modal-content" onclick="event.stopPropagation()">
         <div class="modal-close" onclick="closeModal()">×</div>
-        
-        <div id="modal-image-wrapper">
-          <div id="modal-image-box" class="card-image"></div>
-        </div>
-
+        <div id="modal-image-wrapper"><div id="modal-image-box" class="card-image"></div></div>
         <h3 id="modal-name">キャラクター名</h3>
         <div id="modal-info">属性 / ジャンル</div>
       </div>
@@ -376,6 +339,14 @@
     function switchView(viewId) {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById(viewId).classList.add('active');
+
+      // ガチャを引く画面・結果画面中は下のタブナビゲーションを隠す
+      const bottomNav = document.querySelector('.bottom-nav');
+      if (viewId === 'view-gacha-pull' || viewId === 'view-gacha-result') {
+        bottomNav.style.display = 'none';
+      } else {
+        bottomNav.style.display = 'flex';
+      }
     }
 
     function switchTab(tab) {
@@ -393,20 +364,20 @@
       gachaData.forEach(gacha => {
         const banner = document.createElement('div');
         banner.className = 'gacha-banner';
-        banner.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('./public/image/gacha/${gacha.image}')`;
-        banner.innerText = gacha.name;
+        // パスを public/img/gacha に変更し、暗くするグラデーションを削除
+        banner.style.backgroundImage = `url('./public/img/gacha/${gacha.image}')`;
+        banner.innerHTML = `<span class="gacha-banner-text">${gacha.name}</span>`;
         banner.onclick = () => {
           currentGacha = gacha;
           document.getElementById('pull-gacha-title').innerText = gacha.name;
           document.getElementById('pull-banner-preview').style.backgroundImage = banner.style.backgroundImage;
-          document.getElementById('pull-banner-preview').innerText = gacha.name;
+          document.getElementById('pull-banner-preview').innerHTML = banner.innerHTML;
           switchView('view-gacha-pull');
         };
         container.appendChild(banner);
       });
     }
 
-    // ガチャ確認モーダル関連の処理
     function confirmGacha(times) {
       pendingGachaTimes = times;
       document.getElementById('confirm-text').innerText = `${times}回 ガチャを引きますか？`;
@@ -440,7 +411,7 @@
         const pulledCard = finalPool[Math.floor(Math.random() * finalPool.length)];
         
         results.push(pulledCard);
-        ownedCardIds.add(pulledCard.id);
+        ownedCardIds.add(pulledCard.id); // ここで所持IDに追加
       }
 
       renderCards(results, 'gacha-result-container', false);
@@ -451,7 +422,6 @@
       const container = document.getElementById(containerId);
       container.innerHTML = ''; 
 
-      // ボタンの初期化とカウント準備
       let revealedCount = 0;
       const totalCards = isPokedexMode ? 0 : cardsArray.length;
       const btnContainer = document.getElementById('result-action-buttons');
@@ -464,76 +434,8 @@
         const isOwned = ownedCardIds.has(card.id);
         const wrapperEl = document.createElement('div');
         wrapperEl.className = 'card-wrapper';
-        
-        // フリップ用の内部構造を作成
-        const innerEl = document.createElement('div');
-        innerEl.className = 'card-inner';
-        const frontEl = document.createElement('div');
-        frontEl.className = 'card-front';
-        const backEl = document.createElement('div');
-        backEl.className = 'card-back';
 
-        // 図鑑モードとガチャモードで処理を分岐
-        if (isPokedexMode) {
-          if (!isOwned) wrapperEl.classList.add('is-unowned');
-          else {
-             if (card.rarity === 5) wrapperEl.classList.add('is-star5');
-             if (card.rarity === 4) wrapperEl.classList.add('is-star4');
-          }
-          wrapperEl.appendChild(frontEl); // 図鑑は裏面不要なので表面だけ入れる
-        } else {
-          wrapperEl.classList.add('in-gacha');
-          
-          // レアリティに応じたフリップ速度クラスを付与
-          if (card.rarity === 5) {
-              wrapperEl.classList.add('is-star5', 'flip-star5');
-          } else if (card.rarity === 4) {
-              wrapperEl.classList.add('is-star4', 'flip-star4');
-          } else {
-              wrapperEl.classList.add('flip-star-normal');
-          }
-
-          // 昇格（パリンッ！）演出の判定（☆4以上で30%の確率）
-          let initialBackRarity = card.rarity;
-          if (card.rarity >= 4 && Math.random() < 0.30) {
-            wrapperEl.classList.add('is-fakeout');
-            initialBackRarity = 3; // 裏面はあえて☆3（銀色）にする
-          }
-
-          // 裏面の見た目をセット
-          if (initialBackRarity === 5) backEl.classList.add('back-star5');
-          else if (initialBackRarity === 4) backEl.classList.add('back-star4');
-
-          innerEl.appendChild(backEl);
-          innerEl.appendChild(frontEl);
-          wrapperEl.appendChild(innerEl);
-
-          // タップでめくるイベント
-          let isRevealed = false;
-          wrapperEl.onclick = () => {
-            if (!isRevealed) {
-              wrapperEl.classList.add('is-flipped'); // ここでフリップ（または昇格アニメ）発動
-              isRevealed = true;
-
-              // 全てのカードがめくられたらボタンを活性化
-              revealedCount++;
-              if (revealedCount === totalCards && btnContainer) {
-                // 最後の演出が終わる頃（1.5〜2秒後）に表示
-                const delay = wrapperEl.classList.contains('is-fakeout') ? 2000 : 1500;
-                setTimeout(() => {
-                  btnContainer.style.opacity = '1';
-                  btnContainer.style.pointerEvents = 'auto';
-                }, delay);
-              }
-            } else {
-               // 既にめくられている場合は、本来の詳細モーダルを開く
-               const positionX = (card.rarity - 1) * 25;
-               openModal(card, positionX);
-            }
-          };
-        }
-        
-        // --- 表面（カード絵柄）の構築 ---
+        // 共通のカード表面パーツを作成
         const imgEl = document.createElement('div');
         imgEl.className = 'card-image';
         imgEl.style.backgroundImage = `url('${card.imageUrl}')`;
@@ -559,15 +461,73 @@
         const attrEl = document.createElement('div');
         attrEl.className = `attr-badge attr-${card.attribute}`;
 
-        frontEl.appendChild(imgEl);
-        frontEl.appendChild(diamondsEl);
-        frontEl.appendChild(attrEl);
-        
-        // 図鑑の未所持はクリック不可、所持済みはモーダル表示
-        if (isPokedexMode && !isOwned) {
-          wrapperEl.onclick = null;
-        } else if (isPokedexMode) {
-          wrapperEl.onclick = () => openModal(card, positionX);
+        // ★★★ ここで図鑑モードとガチャモードを完全に分離 ★★★
+        if (isPokedexMode) {
+          // 図鑑モード：3D効果を一切入れず、シンプルに組み立てる（透明バグ回避）
+          if (!isOwned) {
+            wrapperEl.classList.add('is-unowned');
+          } else {
+             if (card.rarity === 5) wrapperEl.classList.add('is-star5');
+             if (card.rarity === 4) wrapperEl.classList.add('is-star4');
+          }
+          wrapperEl.appendChild(imgEl);
+          wrapperEl.appendChild(diamondsEl);
+          wrapperEl.appendChild(attrEl);
+
+          if (!isOwned) wrapperEl.onclick = null;
+          else wrapperEl.onclick = () => openModal(card, positionX);
+
+        } else {
+          // ガチャ結果モード：フリップ用の3D構造を作る
+          wrapperEl.classList.add('in-gacha');
+          
+          if (card.rarity === 5) wrapperEl.classList.add('is-star5', 'flip-star5');
+          else if (card.rarity === 4) wrapperEl.classList.add('is-star4', 'flip-star4');
+          else wrapperEl.classList.add('flip-star-normal');
+
+          let initialBackRarity = card.rarity;
+          if (card.rarity >= 4 && Math.random() < 0.30) {
+            wrapperEl.classList.add('is-fakeout');
+            initialBackRarity = 3;
+          }
+
+          const innerEl = document.createElement('div');
+          innerEl.className = 'card-inner';
+          const frontEl = document.createElement('div');
+          frontEl.className = 'card-front';
+          const backEl = document.createElement('div');
+          backEl.className = 'card-back';
+
+          if (initialBackRarity === 5) backEl.classList.add('back-star5');
+          else if (initialBackRarity === 4) backEl.classList.add('back-star4');
+
+          // 表面パーツを「frontEl」に入れる
+          frontEl.appendChild(imgEl);
+          frontEl.appendChild(diamondsEl);
+          frontEl.appendChild(attrEl);
+
+          innerEl.appendChild(backEl);
+          innerEl.appendChild(frontEl);
+          wrapperEl.appendChild(innerEl);
+
+          let isRevealed = false;
+          wrapperEl.onclick = () => {
+            if (!isRevealed) {
+              wrapperEl.classList.add('is-flipped');
+              isRevealed = true;
+
+              revealedCount++;
+              if (revealedCount === totalCards && btnContainer) {
+                const delay = wrapperEl.classList.contains('is-fakeout') ? 2000 : 1500;
+                setTimeout(() => {
+                  btnContainer.style.opacity = '1';
+                  btnContainer.style.pointerEvents = 'auto';
+                }, delay);
+              }
+            } else {
+               openModal(card, positionX);
+            }
+          };
         }
 
         container.appendChild(wrapperEl);
@@ -576,7 +536,6 @@
 
     function openModal(card, positionX) {
       const modalWrapper = document.getElementById('modal-image-wrapper');
-      
       modalWrapper.className = ''; 
       if (card.rarity === 5) modalWrapper.classList.add('is-star5');
       if (card.rarity === 4) modalWrapper.classList.add('is-star4');
@@ -590,9 +549,7 @@
       document.getElementById('modal-overlay').style.display = 'flex';
     }
     
-    function closeModal() {
-      document.getElementById('modal-overlay').style.display = 'none';
-    }
+    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
 
     initGachaList();
   </script>
