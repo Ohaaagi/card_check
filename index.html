@@ -6,24 +6,31 @@
   <title>カードコレクション</title>
   <style>
     /* =========================================
-       1. 全体レイアウト
+       ★追加: 要素のはみ出しを完全に防ぐ魔法のコード
+       ========================================= */
+    * {
+      box-sizing: border-box;
+    }
+
+    /* =========================================
+       1. 全体レイアウト（どのスマホでもピッタリ収まるように修正）
        ========================================= */
     :root { font-size: 16px; }
     body {
       margin: 0; background-color: #000; display: flex;
       justify-content: center; align-items: center;
-      height: 100vh; font-family: 'Helvetica Neue', Arial, sans-serif;
+      height: 100dvh; /* スマホのブラウザバーを考慮した高さ指定 */
+      font-family: 'Helvetica Neue', Arial, sans-serif;
       color: #e2e8f0; overflow: hidden;
     }
     #app {
-      width: 100vw; height: 100vh; aspect-ratio: 9 / 16;
-      max-width: calc(100vh * 9 / 16); max-height: calc(100vw * 16 / 9);
+      width: 100%; height: 100%; max-width: 480px; /* PCで見てもスマホサイズに制限 */
       background-color: #0d1117; position: relative;
-      display: flex; flex-direction: column; box-shadow: 0 0 2rem rgba(255,255,255,0.1);
+      display: flex; flex-direction: column; 
     }
     .view {
       flex: 1; display: none; flex-direction: column;
-      overflow-y: auto; overflow-x: hidden; padding: 3vw;
+      overflow-y: auto; overflow-x: hidden; padding: 12px;
     }
     .view.active { display: flex; }
     h2 {
@@ -68,8 +75,8 @@
     }
     .btn-pull-5 { background: linear-gradient(135deg, #f59e0b, #d97706); border-color: #fbbf24; }
     .btn-pull:active { transform: translateY(0.2rem); }
-    .result-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 3vw; margin-top: 1rem; }
-    .result-grid .card-wrapper { width: 25vw; max-width: 6rem; }
+    .result-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 1rem; }
+    .result-grid .card-wrapper { width: 25vw; max-width: 80px; }
     .back-btn {
       margin-top: 3rem; padding: 0.8rem; text-align: center;
       background-color: #475569; border-radius: 0.5rem; cursor: pointer;
@@ -79,7 +86,10 @@
        4. 図鑑画面
        ========================================= */
     .pokedex-grid {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.5vw; padding-bottom: 2rem;
+      display: grid; 
+      grid-template-columns: repeat(5, 1fr); 
+      gap: 6px; /* スキマをピクセルで固定して綺麗に並べる */
+      padding-bottom: 2rem;
     }
 
     /* =========================================
@@ -94,19 +104,21 @@
     .card-image {
       width: 100%; height: 100%; border-radius: 0.35rem;
       background-size: 500% 100%; position: relative; overflow: hidden; 
+      background-color: #1e293b; /* 画像が無い時の仮背景 */
     }
     .card-overlay {
       position: absolute; bottom: 0; left: 0; right: 0; height: 40%;
       background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
     }
 
-    /* 未所持（シルエット）のスタイル */
+    /* ★修正: 未所持（シルエット）のスタイル */
     .is-unowned .card-image {
-      filter: brightness(0) contrast(1.2); /* 画像を真っ黒のシルエットにする */
-      opacity: 0.6;
+      /* 真っ黒ではなく、白黒にして少し暗くする（うっすら見えるカッコいい仕様） */
+      filter: grayscale(100%) brightness(0.25); 
     }
     .is-unowned .card-wrapper {
-      background: #1e293b; /* 枠線を暗くする */
+      background: #0f172a; /* 枠線を暗く */
+      border: 1px solid #1e293b;
       box-shadow: none;
       cursor: default; /* タップ不可に */
     }
@@ -126,11 +138,11 @@
 
     /* ダイヤ（レアリティ） */
     .rarity-diamonds {
-      position: absolute; bottom: 0.5vw; left: 0.5vw; display: flex; align-items: center; z-index: 10;
+      position: absolute; bottom: 4px; left: 4px; display: flex; align-items: center; z-index: 10;
     }
     .diamond {
-      width: 1.8vw; max-width: 0.7rem; aspect-ratio: 1 / 1;
-      transform: rotate(45deg); border: 0.1rem solid rgba(255, 255, 255, 0.7); margin-left: -0.8vw;
+      width: 10px; height: 10px;
+      transform: rotate(45deg); border: 1px solid rgba(255, 255, 255, 0.7); margin-left: -4px;
     }
     .diamond:first-child { margin-left: 0; }
     
@@ -146,8 +158,8 @@
 
     /* 属性バッジ */
     .attr-badge {
-      position: absolute; bottom: 0.3vw; right: 0.3vw; width: 2.5vw; max-width: 1rem;
-      aspect-ratio: 1 / 1; border-radius: 50%; border: 0.1rem solid rgba(255,255,255,0.8); z-index: 10;
+      position: absolute; bottom: 3px; right: 3px; width: 14px; height: 14px;
+      border-radius: 50%; border: 1px solid rgba(255,255,255,0.8); z-index: 10;
     }
     .attr-黄 { background: linear-gradient(135deg, #fde047, #ca8a04); }
     .attr-桃 { background: linear-gradient(135deg, #f9a8d4, #db2777); }
@@ -263,8 +275,6 @@
     ];
 
     let currentGacha = null;
-    
-    // ★ 獲得したカードのIDを一時的に保存する入れ物（リロードでリセット）
     const ownedCardIds = new Set();
 
     function switchView(viewId) {
@@ -278,7 +288,7 @@
       if (tab === 'gacha') switchView('view-gacha');
       else if (tab === 'pokedex') {
         switchView('view-pokedex');
-        renderCards(allCards, 'pokedex-container', true); // 図鑑モード（未所持はシルエット）で描画
+        renderCards(allCards, 'pokedex-container', true);
       }
     }
 
@@ -318,14 +328,13 @@
         const pulledCard = finalPool[Math.floor(Math.random() * finalPool.length)];
         
         results.push(pulledCard);
-        ownedCardIds.add(pulledCard.id); // ★ 引いたカードを図鑑に登録！
+        ownedCardIds.add(pulledCard.id);
       }
 
-      renderCards(results, 'gacha-result-container', false); // 結果画面はシルエット化しない
+      renderCards(results, 'gacha-result-container', false);
       switchView('view-gacha-result');
     }
 
-    // isPokedexModeがtrueのとき、未所持カードをシルエットにする
     function renderCards(cardsArray, containerId, isPokedexMode = false) {
       const container = document.getElementById(containerId);
       container.innerHTML = ''; 
@@ -335,7 +344,6 @@
         const wrapperEl = document.createElement('div');
         wrapperEl.className = 'card-wrapper';
         
-        // 図鑑モードで未所持の場合は特別なクラスをつける
         if (isPokedexMode && !isOwned) {
           wrapperEl.classList.add('is-unowned');
         } else if (card.rarity === 5) {
@@ -352,7 +360,6 @@
         overlayEl.className = 'card-overlay';
         imgEl.appendChild(overlayEl);
 
-        // ★ レアリティごとのダイヤのクラスを決定
         let diamondColorClass = 'diamond-silver';
         if (card.rarity === 4) diamondColorClass = 'diamond-gold';
         if (card.rarity === 5) diamondColorClass = 'diamond-rainbow';
@@ -372,7 +379,6 @@
         wrapperEl.appendChild(diamondsEl);
         wrapperEl.appendChild(attrEl);
         
-        // 未所持の場合はタップしても開かない
         if (isPokedexMode && !isOwned) {
           wrapperEl.onclick = null;
         } else {
